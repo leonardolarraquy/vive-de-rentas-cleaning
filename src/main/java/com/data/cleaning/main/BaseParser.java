@@ -193,7 +193,10 @@ public abstract class BaseParser {
 
 				if(beneficiario.indexOf("llevando") > 0)
 					beneficiario = beneficiario.substring(0, beneficiario.indexOf("llevando"));
-				
+
+				if(beneficiario.indexOf("fallec") > 0)
+					beneficiario = beneficiario.substring(0, beneficiario.indexOf("fallec"));
+
 
 				String fechaContrato      = fechaContrato(content);
 				String fechaContratoNum   = Commons.convertirFecha(fechaContrato);
