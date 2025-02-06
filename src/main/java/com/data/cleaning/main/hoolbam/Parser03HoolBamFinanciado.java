@@ -255,29 +255,6 @@ public class Parser03HoolBamFinanciado {
 		return "";
 	}
 
-	public static String extractDerecho(String content) {
-		try {
-			int index = content.indexOf("con el ", content.indexOf("deseo celebrar"));
-			int index2 = content.indexOf("conforme", index) - 1;
-
-			int index3 = content.indexOf(",", index);
-			if(index3 != -1 && index3 < index2)
-				index2 = index3;
-
-			index3 = content.indexOf(".", index);
-			if(index3 != -1 && index3 < index2)
-				index2 = index3;
-
-			return content.substring(index, index2);
-
-		}
-		catch(Exception e) {
-
-		}
-
-		return "";
-	}
-
 	public static String extractFechaContrato(String texto) {
 		try {
 

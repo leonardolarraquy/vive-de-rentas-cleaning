@@ -343,6 +343,8 @@ public class Commons {
 			Matcher matcher = pattern.matcher(content);
 			if(matcher.find()) {
 				String extracted = matcher.group(1);
+				extracted = Commons.toSingleLine(extracted);
+				
 				return extracted.replaceAll("EL SEÑOR", "").replaceAll("EL SENOR", "").replaceAll("LA SEÑORA", "").replaceAll("LA SEÑORITA", "").replaceAll("LA PERSONA MORAL DENOMINADA", "").replaceAll("REPRESENTADA EN ESTE ACTO", "").replaceAll(",", "").trim();
 			}
 
@@ -357,6 +359,7 @@ public class Commons {
 				index2 = index3;
 
 			String substr = content.substring(index + 11, index2);
+			substr = Commons.toSingleLine(substr);
 
 			return substr.replaceAll("EL SEÑOR", "").replaceAll("EL SENOR", "").replaceAll("LA SEÑORA", "").replaceAll("LA SEÑORITA", "").replaceAll("LA PERSONA MORAL DENOMINADA", "").replaceAll("REPRESENTADA EN ESTE ACTO", "").replaceAll(",", "").trim();
 		}
@@ -620,8 +623,7 @@ public class Commons {
 
 			int index2 = content.indexOf(fin, index);
 
-			return content.substring(index, index2);
-
+			return content.substring(index, index2).trim();
 		}
 		catch(Exception e) {
 		}

@@ -120,6 +120,18 @@ public abstract class BaseParser {
 		}
 
 	}
+	
+	public String getTags(String content) {
+		return Commons.tags(content);
+	}
+	
+	public String getEnajenante(String content) {
+		return Commons.extractPromitenteEnajenante(content);
+	}
+
+	public String getAdquiriente(String content) {
+		return Commons.extractPromitenteAdquiriente(content);
+	}
 
 	public void process() {
 		String folderPath = getFolderPath();
@@ -146,13 +158,13 @@ public abstract class BaseParser {
 				i++;
 
 				String content              = Files.readString(txtFile.toPath());
-				String promitenteEnajenante = Commons.extractPromitenteEnajenante(content);
+				String promitenteEnajenante = this.getEnajenante(content);
 
 				String revisionManual     = "";
 
-				String tags                 = Commons.tags(content);
+				String tags                 = this.getTags(content);
 
-				String promitenteAdquirente = Commons.extractPromitenteAdquiriente(content);
+				String promitenteAdquirente = this.getAdquiriente(content);
 				boolean personaFisica       = this.isPersonaFisica(content);
 
 				String CURP                 = this.getCURP(content);
@@ -175,9 +187,13 @@ public abstract class BaseParser {
 						revisionManual = revisionManual + "RFC Invalido.";					
 				}
 
-				String beneficiario       = Commons.extract(content, " a ", ",", ". BENEFICIARIO");
+				String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
 				if(beneficiario.length() > 0)
 					beneficiario = beneficiario.substring(2, beneficiario.length());
+
+				if(beneficiario.indexOf("llevando") > 0)
+					beneficiario = beneficiario.substring(0, beneficiario.indexOf("llevando"));
+				
 
 				String fechaContrato      = fechaContrato(content);
 				String fechaContratoNum   = Commons.convertirFecha(fechaContrato);
@@ -245,12 +261,23 @@ public abstract class BaseParser {
 		try {
 
 			int index  = texto.indexOf("en dos tanto en el Estado de México");
-			int index2 = texto.indexOf(".", index + 10);
+			if(index > 0) {
+				int index2 = texto.indexOf(".", index + 10);
 
-			if((index2 - (index + 36)) > 40)
-				index2 = texto.indexOf("EL", index + 10) - 1;
+				if((index2 - (index + 36)) > 40)
+					index2 = texto.indexOf("EL", index + 10) - 1;
 
-			return Commons.toSingleLine(texto.substring(index + 36, index2)).replaceAll("a los", "").replaceAll("al ", "").replaceAll("a ", "").replaceAll("días ", "").replaceAll("de ", "").replaceAll("del ", "").trim();
+				return Commons.toSingleLine(texto.substring(index + 36, index2)).replaceAll("a los", "").replaceAll("al ", "").replaceAll("a ", "").replaceAll("días ", "").replaceAll("de ", "").replaceAll("del ", "").trim();
+			}
+			
+			index  = texto.indexOf("día", texto.indexOf("lo firman de conformidad"));
+			int index2 = texto.indexOf("E", index);
+
+			String res = texto.substring(index - 4, index2);
+			if(res.indexOf(".") > 0)
+				res = res.substring(0, res.indexOf("."));
+
+			return res;
 		}
 		catch(Exception e) {
 		}
