@@ -79,7 +79,7 @@ public class ParcialidadesPromesaCompraventa extends BaseParser {
 		if(fechaContrato.length() == 0 || fechaContratoNum.length() == 0) {
 			revisionManual     = revisionManual + "Fecha Contrato.";
 			fechaContrato      = "";
-			fechaContratoNum      = "";
+			fechaContratoNum   = "";
 		}
 		else {
 			anoContrato = Integer.parseInt(fechaContratoNum.substring(fechaContratoNum.length() - 4));

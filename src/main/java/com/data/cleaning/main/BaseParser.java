@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseParser {
 
-	public static final String BASE_TITLE = "Tipo Contrato|Nombre Proyecto|Nombre del archivo|Link a archivo|Tags|ENAJENANTE|Nombres ADQUIRENTE|Apellido Paterno ADQUIRENTE|Apellido Materno ADQUIRENTE|P. Fisica|P. Moral|Clave Unica|CURP|Clave RFC|RFC|Fecha Nacimiento|Direccion|Nacionalidad|Estado Civil|Mail 1|Mail 2|Mail 3|Beneficiario|Fecha Contrato|Fecha Contrato Numerica|Revision Manual|";
+	public static final String BASE_TITLE = "Tipo Contrato|Nombre Proyecto|Nombre del archivo|Link a archivo|Tags|ENAJENANTE|Razon Social ADQUIRENTE|Nombres ADQUIRENTE|Apellido Paterno ADQUIRENTE|Apellido Materno ADQUIRENTE|P. Fisica|P. Moral|Clave Unica|CURP|Clave RFC|RFC|Fecha Nacimiento|Direccion|Nacionalidad|Estado Civil|Mail 1|Mail 2|Mail 3|Beneficiario|Fecha Contrato|Fecha Contrato Numerica|Revision Manual|";
 
 	public abstract String getTipoContrato();
 
@@ -23,9 +23,9 @@ public abstract class BaseParser {
 	public abstract String getFolderPath();
 
 	public abstract void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException;
-	
+
 	public abstract String getFieldsTitle();
-	
+
 	public String getCURP(String content) {
 		return Commons.getCURP(content);
 	}
@@ -33,88 +33,94 @@ public abstract class BaseParser {
 	public String getRFC(String content, String init) {
 		return Commons.getRFC(content, init);
 	}
-	
+
 	public boolean isPersonaFisica(String content) {
-        String regex = "(?i)\\b(personas?\\s+f[ií]sicas?)\\b";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(content);
-        return matcher.find();
+		String regex = "(?i)\\b(personas?\\s+f[ií]sicas?)\\b";
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(content);
+		return matcher.find();
 	}
-	
+
 	public String getDireccionAdquirente(String content) {
 		String direccionAdquirente  = Commons.extract(content, "ADQUIRENTE", "Cualquiera", "OCTAVA");
 		if(direccionAdquirente.length() > 13)
 			direccionAdquirente = direccionAdquirente.substring(13);
-		
+
+		if(direccionAdquirente.indexOf("EL ") > 0)
+			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("EL "));	
+
 		if(direccionAdquirente.indexOf("/") > 0)
 			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("/"));	
 
+		if(direccionAdquirente.indexOf("DÉCIMA") > 0)
+			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("DÉCIMA"));	
+
 		return Commons.toSingleLine(direccionAdquirente);
 	}
-	
 
-    public static String[] getNames(String nombreCompleto) {
-    	final Set<String> EXCEPCIONES = new HashSet<>(Arrays.asList(
-    	        "DE", "DEL", "LA", "LOS", "Y", "MAC", "VAN", "VON"
-    	    ));
 
-    	
-        if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
-            return new String[]{"", "", ""}; // Caso vacío
-        }
+	public static String[] getNames(String nombreCompleto) {
+		final Set<String> EXCEPCIONES = new HashSet<>(Arrays.asList(
+				"DE", "DEL", "LA", "LOS", "Y", "MAC", "VAN", "VON"
+				));
 
-        List<String> partes = Arrays.asList(nombreCompleto.trim().split("\\s+"));
 
-        if (partes.size() == 1) {
-            return new String[]{partes.get(0), "", ""}; // Solo un nombre
-        }
+		if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
+			return new String[]{"", "", ""}; // Caso vacío
+		}
 
-        if (partes.size() == 2) {
-            return new String[]{partes.get(0), partes.get(1), ""}; // Nombre y apellido paterno
-        }
+		List<String> partes = Arrays.asList(nombreCompleto.trim().split("\\s+"));
 
-        // Caso de tres o más palabras
-        int i = 1;
-        while (i < partes.size() - 2 && EXCEPCIONES.contains(partes.get(i).toUpperCase())) {
-            i++;
-        }
+		if (partes.size() == 1) {
+			return new String[]{partes.get(0), "", ""}; // Solo un nombre
+		}
 
-        String nombre = String.join(" ", partes.subList(0, i));
-        String apellidoPaterno = partes.get(i);
-        String apellidoMaterno = (i + 1 < partes.size()) ? String.join(" ", partes.subList(i + 1, partes.size())) : "";
+		if (partes.size() == 2) {
+			return new String[]{partes.get(0), partes.get(1), ""}; // Nombre y apellido paterno
+		}
 
-        return new String[]{nombre, apellidoPaterno, apellidoMaterno};
-    }
-    
-    public String getFechaNacimiento(String curp, String rfc) {
-    	String documento = curp;
-        if (documento == null || documento.length() < 10) {
-        	documento = rfc;
-        }
-        if (documento == null || documento.length() < 10) {
-        	return "";
-        }
+		// Caso de tres o más palabras
+		int i = 1;
+		while (i < partes.size() - 2 && EXCEPCIONES.contains(partes.get(i).toUpperCase())) {
+			i++;
+		}
 
-        String fechaStr = documento.substring(4, 10);
-        try {
-            // Determinar el siglo correcto
-            int year = Integer.parseInt(fechaStr.substring(0, 2));
-            int month = Integer.parseInt(fechaStr.substring(2, 4));
-            int day = Integer.parseInt(fechaStr.substring(4, 6));
+		String nombre = String.join(" ", partes.subList(0, i));
+		String apellidoPaterno = partes.get(i);
+		String apellidoMaterno = (i + 1 < partes.size()) ? String.join(" ", partes.subList(i + 1, partes.size())) : "";
 
-            // Si el año está por debajo de 2000, asumimos que es del siglo XX, de lo contrario, XXI
-            year += (year >= 0 && year <= 24) ? 2000 : 1900;
+		return new String[]{nombre, apellidoPaterno, apellidoMaterno};
+	}
 
-            return String.format("%02d/%02d/%d", day, month, year);        	
-        }
-        catch(Exception e) {
-        	System.out.println("Fecha nacimiento invalida: " + fechaStr);
-        	
-        	return "";
-        }
+	public String getFechaNacimiento(String curp, String rfc) {
+		String documento = curp;
+		if (documento == null || documento.length() < 10) {
+			documento = rfc;
+		}
+		if (documento == null || documento.length() < 10) {
+			return "";
+		}
 
-    }
-    
+		String fechaStr = documento.substring(4, 10);
+		try {
+			// Determinar el siglo correcto
+			int year = Integer.parseInt(fechaStr.substring(0, 2));
+			int month = Integer.parseInt(fechaStr.substring(2, 4));
+			int day = Integer.parseInt(fechaStr.substring(4, 6));
+
+			// Si el año está por debajo de 2000, asumimos que es del siglo XX, de lo contrario, XXI
+			year += (year >= 0 && year <= 24) ? 2000 : 1900;
+
+			return String.format("%02d/%02d/%d", day, month, year);        	
+		}
+		catch(Exception e) {
+			System.out.println("Fecha nacimiento invalida: " + fechaStr);
+
+			return "";
+		}
+
+	}
+
 	public void process() {
 		String folderPath = getFolderPath();
 
@@ -178,7 +184,15 @@ public abstract class BaseParser {
 				if(fechaContratoNum.length() == 0)
 					revisionManual = revisionManual + "Fecha Contrato.";
 
-				String[] nombres = getNames(promitenteAdquirente);
+				String[] nombres          = getNames(promitenteAdquirente);
+				
+				String fechaNacimiento    = this.getFechaNacimiento(CURPLimpio, RFCLimpio);
+				if(fechaNacimiento.length() == 0)
+					revisionManual = revisionManual + "Fecha Nacimiento.";
+				
+				String direccion          = this.getDireccionAdquirente(content);
+				if(direccion.length() == 0)
+					revisionManual = revisionManual + "Direccion.";
 
 				// Escribir una fila en el archivo CSV
 				csvWriter.write(String.join("|",
@@ -188,13 +202,13 @@ public abstract class BaseParser {
 						Commons.toSingleLine(ruta),
 						tags,						
 
+						//ADQUIRENTE
 						Commons.toSingleLine(promitenteEnajenante),
-						
-						Commons.toSingleLine(nombres[0]),
-						Commons.toSingleLine(nombres[1]),
-						Commons.toSingleLine(nombres[2]),
-						
-						
+						Commons.toSingleLine((!personaFisica ? promitenteAdquirente : "")),
+						Commons.toSingleLine((personaFisica ? nombres[0] : "")),
+						Commons.toSingleLine((personaFisica ? nombres[1] : "")),
+						Commons.toSingleLine((personaFisica ? nombres[2] : "")),
+
 						Commons.toSingleLine((personaFisica  ? "X" : "")),
 						Commons.toSingleLine((!personaFisica ? "X" : "")),
 
@@ -203,9 +217,8 @@ public abstract class BaseParser {
 						Commons.toSingleLine(RFC),
 						Commons.toSingleLine(RFCLimpio),
 
-						this.getFechaNacimiento(CURPLimpio, RFCLimpio),
-						
-						this.getDireccionAdquirente(content),
+						fechaNacimiento,
+						Commons.toSingleLine(direccion),
 
 						Commons.extraerNacionalidad(content),
 						Commons.extraerEstadoCivil(content),
@@ -215,10 +228,10 @@ public abstract class BaseParser {
 						Commons.toSingleLine(fechaContrato),
 						Commons.toSingleLine(fechaContratoNum)));
 
-						this.addOtherFields(csvWriter, content, revisionManual);
+				this.addOtherFields(csvWriter, content, revisionManual);
 
-						
-						csvWriter.write("\n");
+
+				csvWriter.write("\n");
 			}
 
 			System.out.println("Archivo CSV generado en: " + csvOutputPath);
