@@ -37,7 +37,7 @@ public class HoolBam01Fractional extends BaseParser {
 			porcDerechosNum  = porcDerechosNum + "%";
 		else revisionManual  = revisionManual + "Fraccion.";
 
-		String participacion        = Commons.extract(content, "participación equivalente", "(");
+		String participacion        = Commons.extract(content, "equivalente", "(");
 		String participacionNum     = Commons.extractParteDecimal(participacion);
 		if(participacionNum.length() > 0)
 			participacionNum  = participacionNum + "%";
