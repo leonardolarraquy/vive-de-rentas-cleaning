@@ -133,6 +133,21 @@ public abstract class BaseParser {
 		return Commons.extractPromitenteAdquiriente(content);
 	}
 
+	public String getBeneficiario(String content) {
+		String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
+		if(beneficiario.length() > 0)
+			beneficiario = beneficiario.substring(2, beneficiario.length());
+
+		if(beneficiario.indexOf("llevando") > 0)
+			beneficiario = beneficiario.substring(0, beneficiario.indexOf("llevando"));
+
+		if(beneficiario.indexOf("fallec") > 0)
+			beneficiario = beneficiario.substring(0, beneficiario.indexOf("fallec"));
+
+		return beneficiario;
+	}
+	
+	
 	public void process() {
 		String folderPath = getFolderPath();
 
@@ -187,17 +202,8 @@ public abstract class BaseParser {
 						revisionManual = revisionManual + "RFC Invalido.";					
 				}
 
-				String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
-				if(beneficiario.length() > 0)
-					beneficiario = beneficiario.substring(2, beneficiario.length());
-
-				if(beneficiario.indexOf("llevando") > 0)
-					beneficiario = beneficiario.substring(0, beneficiario.indexOf("llevando"));
-
-				if(beneficiario.indexOf("fallec") > 0)
-					beneficiario = beneficiario.substring(0, beneficiario.indexOf("fallec"));
-
-
+				String beneficiario       = this.getBeneficiario(content);
+						
 				String fechaContrato      = fechaContrato(content);
 				String fechaContratoNum   = Commons.convertirFecha(fechaContrato);
 				if(fechaContratoNum.length() == 0)
