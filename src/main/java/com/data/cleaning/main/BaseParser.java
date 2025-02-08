@@ -134,7 +134,9 @@ public abstract class BaseParser {
 	}
 
 	public String getBeneficiario(String content) {
-		String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
+//		String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
+		String beneficiario       = Commons.extract(content, " a ", ",", "como su");
+
 		if(beneficiario.length() > 0)
 			beneficiario = beneficiario.substring(2, beneficiario.length());
 

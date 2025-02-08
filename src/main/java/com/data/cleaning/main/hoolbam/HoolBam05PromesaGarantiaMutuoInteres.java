@@ -53,7 +53,7 @@ public class HoolBam05PromesaGarantiaMutuoInteres extends BaseParser{
 		String cartaGarantia        = Commons.extract(content, "Adicionalmente, mediante", "anexa", "SEGUNDA");
 		
 		String opcionesSalida       = Commons.extract(content, "TERCERA: ","concluir");
-		String mensualidadSalida    = Commons.extract(content, "posteriores a","simple", "OPCIONES").replaceAll("posteriores a", "");
+		String mensualidadSalida    = Commons.extract(content, "posteriores a", ")", "En virtud").replaceAll("posteriores a", "")  + ")";
 		
 		String oferta               = Commons.extract(content, "realizada" , ",", "TERCERA");
 		String prorroga             = Commons.extract(content, "dentro de un plazo", "." , "TERCERA");
@@ -105,6 +105,15 @@ public class HoolBam05PromesaGarantiaMutuoInteres extends BaseParser{
 						Commons.toSingleLine(vigencia),
 						Commons.toSingleLine(equity)));
 						
+	}
+
+	@Override
+	public String getDireccionAdquirente(String content) {
+		String domicilioAdquirente  = Commons.extract(content, "domicilio en:", " y ").replaceAll("domicilio en:", "");
+		 if (domicilioAdquirente.endsWith(",")) 
+			 domicilioAdquirente = domicilioAdquirente.substring(0, domicilioAdquirente.length() - 1);
+		 
+		 return domicilioAdquirente;
 	}
 
 	public static String extraerPorcentaje(String content) {
