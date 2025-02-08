@@ -1,28 +1,104 @@
 package com.data.cleaning.main.vivastorage.cancun;
 
 import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 
+import com.data.cleaning.main.BaseParser;
 import com.data.cleaning.main.Commons;
 
-public class ParserCancunDerechosFideicomisariosMod2 {
+public class CancunDerechosFideicomisariosMod2 extends BaseParser{
 	
-	public static String getTipoContrato() {
+	public String getTipoContrato() {
 		return "Promesa compraventa-Derechos fideicomisarios-m2";
 	}
 	
-	public static String getProyecto() {
+	public String getProyecto() {
 		return "Vive Storage Cancún";
 	}
 	
-	public static String getFolderPath() {
+	public String getFolderPath() {
 		return "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/cancun-promesa-compra-venta-derecho-fideicomisarios-mod2/";
 	}
 
+	public String getFieldsTitle() {
+		return "Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Obligaciones del Enajenante|Vigencia|Emision Derechos|Emision Derechos Num|Prorroga|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos";
+	}
 
+	public static void main(String[] args) {
+		CancunDerechosFideicomisariosMod2 parser = new CancunDerechosFideicomisariosMod2();
+		parser.process();
+	}
+
+	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
+		String ubicacion            = Commons.extract(content, "ubicado", "(", "proyecto").replaceAll("ubicado en", "");
+		if(ubicacion.length() == 0)
+			revisionManual = revisionManual + "Ubicacion.";					
+
+		String propiedad            = Commons.extract(content, "correspondientes", "ubicada", "PRIMERA");
+		
+		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		String moneda               = Commons.extractMoneda(contraprestacion);
+		
+		String apartado             = Commons.extract(content, "cantidad", "(", "entregó");
+		String liquidacion          = Commons.extract(content, "cantidad", "(", "pagar");
+		
+		String obligaciones         = Commons.extract(content, "del", "que", "constitución");
+		String vigencia             = Commons.extract(content, "estar", " a ", "SEXTA");
+		
+		String emisionDerechos      = Commons.extract(content, "mes", ".", "DERECHOS");
+		if(emisionDerechos.length() == 0)
+			revisionManual = revisionManual + "Emision Derechos.";					
+
+		String prorroga             = Commons.extract(content, "prorrogarse", "en", "DERECHOS");
+				
+		String plazoRendimiento     = Commons.extract(content, "durante", "contados", "Al respecto");
+		
+		String rentabilidadAnual    = Commons.extract(content, "correspondiente", ",", "Al respecto");
+		if(rentabilidadAnual.indexOf(",") > 0)
+			rentabilidadAnual = rentabilidadAnual.substring(0, rentabilidadAnual.indexOf(","));
+		
+		String aPartir              = Commons.extract(content, "partir", ".", "Al respecto");
+		if(aPartir.indexOf(",") > 0)
+			aPartir = aPartir.substring(0, aPartir.indexOf(","));
+
+		if(aPartir.indexOf("el pago") > 0)
+			aPartir = aPartir.substring(0, aPartir.indexOf("el pago"));
+
+		csvWriter.write("|");
+
+		csvWriter.write(
+				String.join("|",
+						revisionManual, 
+
+						Commons.toSingleLine(ubicacion),
+						
+						Commons.toSingleLine(propiedad),
+
+						Commons.toSingleLine(contraprestacion),
+						Commons.toSingleLine(Commons.numericValue(contraprestacion)),
+						Commons.toSingleLine(moneda),
+						
+						Commons.toSingleLine(apartado),
+						Commons.toSingleLine(Commons.numericValue(apartado)),
+						Commons.toSingleLine(liquidacion),
+						Commons.toSingleLine(Commons.numericValue(liquidacion)),
+						
+						Commons.toSingleLine(obligaciones),
+						Commons.toSingleLine(vigencia),
+
+						Commons.toSingleLine(emisionDerechos),
+						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(emisionDerechos)),
+
+						Commons.toSingleLine(prorroga),
+
+						Commons.toSingleLine(plazoRendimiento),
+						Commons.toSingleLine(rentabilidadAnual),
+						Commons.toSingleLine(aPartir)));
+
+	}
+
+
+	/*
 	public static void main(String[] args) {
 		String folderPath = getFolderPath();
 
@@ -202,5 +278,6 @@ public class ParserCancunDerechosFideicomisariosMod2 {
 			System.err.println("Ocurrió un error al procesar los archivos: " + e.getMessage());
 		}
 	}
+	*/
 
 }
