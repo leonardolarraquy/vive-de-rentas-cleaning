@@ -140,7 +140,7 @@ public class Parser02HoolBamCompleto {
 
 				String fechaContratoNum     = Commons.convertirFecha(fechaContrato);
 
-				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
+//				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
 
 				String beneficiario       = Commons.extract(content, "a ", "llevando", "BENEFICIARIO").replaceAll("la señora", "");
 				if(beneficiario.length() > 0)
@@ -192,9 +192,9 @@ public class Parser02HoolBamCompleto {
 						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(entregaNum),
 
-						Commons.toSingleLine(plazo),
+						Commons.toSingleLine(plazo)
 
-						Commons.toSingleLine(domicilioAdquirente)
+//						Commons.toSingleLine(domicilioAdquirente)
 
 						) + "\n");
 			}

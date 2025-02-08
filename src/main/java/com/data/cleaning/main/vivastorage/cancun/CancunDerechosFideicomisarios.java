@@ -44,7 +44,7 @@ public class CancunDerechosFideicomisarios extends BaseParser {
 		String terminacion          = Commons.extract(content, "En caso", ".", "CUARTA");
 		String vigencia             = Commons.extract(content, "estar", " a ", "SEXTA");
 
-		String fechaDeEntrega       = Commons.extract(content, "realizar", ".", "La entrega de");
+		String fechaDeEntrega       = Commons.extract(content, "realizar", ".", "La entrega");
 		if(fechaDeEntrega.length() == 0)
 			revisionManual = revisionManual + "Fecha Entrega.";					
 

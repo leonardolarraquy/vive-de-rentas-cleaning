@@ -123,9 +123,9 @@ public class Parser03HoolBamFinanciado {
 				
 				String plazo                = Commons.extract(content, "plazo", "meses", "OCTAVA");
 
-				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
-				if(domicilioAdquirente.indexOf("/") > 0)
-					domicilioAdquirente = domicilioAdquirente.substring(0, domicilioAdquirente.indexOf("/"));
+//				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
+//				if(domicilioAdquirente.indexOf("/") > 0)
+//					domicilioAdquirente = domicilioAdquirente.substring(0, domicilioAdquirente.indexOf("/"));
 
 				String fechaContrato        = Commons.extract(content, "de México a los", ".", "LEGISLACIÓN APLICABLE").replaceAll("de México a ", "");
 				if(fechaContrato.indexOf("EL") > 0)
@@ -213,9 +213,9 @@ public class Parser03HoolBamFinanciado {
 						Commons.toSingleLine(vigencia),
 						Commons.toSingleLine(operacion),
 
-						Commons.toSingleLine(plazo),
+						Commons.toSingleLine(plazo)
 
-						Commons.toSingleLine(domicilioAdquirente)
+//						Commons.toSingleLine(domicilioAdquirente)
 
 						) + "\n");
 			}

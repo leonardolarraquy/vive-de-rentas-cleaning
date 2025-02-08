@@ -116,12 +116,12 @@ public class Parser04HoolBamEscrituracionCopropiedad {
 
 				String plazo                = Commons.extract(content, "plazo", "en ", "SÉPTIMA");
 
-				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
-				if(content.indexOf("MUTUARIO") > 0)
-					domicilioAdquirente = "";
+//				String domicilioAdquirente  = Parser01HoolBamFractional.extractDomicilioAdquiriente(content);
+//				if(content.indexOf("MUTUARIO") > 0)
+//					domicilioAdquirente = "";
 
-				if(domicilioAdquirente.indexOf("/") > 0)
-					domicilioAdquirente = domicilioAdquirente.substring(0, domicilioAdquirente.indexOf("/"));
+//				if(domicilioAdquirente.indexOf("/") > 0)
+//					domicilioAdquirente = domicilioAdquirente.substring(0, domicilioAdquirente.indexOf("/"));
 
 				String beneficiario       = Commons.extract(content, "a ", ",", "DÉCIMA CUARTA. BENEFICIARIO");
 				if(beneficiario.length() > 0)
@@ -185,9 +185,9 @@ public class Parser04HoolBamEscrituracionCopropiedad {
 
 						Commons.toSingleLine(formaDePago),
 
-						Commons.toSingleLine(plazo),
+						Commons.toSingleLine(plazo)
 
-						Commons.toSingleLine(domicilioAdquirente)
+//						Commons.toSingleLine(domicilioAdquirente)
 
 						) + "\n");
 			}
