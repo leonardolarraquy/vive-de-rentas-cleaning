@@ -138,7 +138,7 @@ public class Commons {
             Matcher matcher = patronCorreo.matcher(linea);
             while (matcher.find()) {
                 String correo = matcher.group();
-                if (!correo.endsWith("@vivedelasrentas.com") && !correo.endsWith("@lgc.com.mx")) {
+                if (!correo.endsWith("rentas.com") && !correo.endsWith("@lgc.com.mx")) {
                     correosUnicos.add(correo);
                 }
             }

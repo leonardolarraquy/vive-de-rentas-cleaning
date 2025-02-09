@@ -31,8 +31,13 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
 		String objeto               = extractObjeto(content);
+		if(objeto == null || objeto.length() == 0)
+			revisionManual = revisionManual + "Objeto.";
 
 		String contraprestacion     = extractContraprestacion(content);
+		if(contraprestacion == null || contraprestacion.length() == 0)
+			revisionManual = revisionManual + "Contraprestacion.";
+
 		String contraprestacionNum  = Commons.numericValue(contraprestacion);
 		String moneda               = Commons.extractMoneda(contraprestacion);
 
@@ -44,7 +49,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 		String entregaNum           = Commons.extraerFechaAPartirDeTexto(entrega.replaceAll("Fecha de entrega:", ""));
 		if(entregaNum == null || entregaNum.length() == 0)
-			revisionManual = "Fecha Entrega.";
+			revisionManual = revisionManual + "Fecha Entrega.";
 
 		String prorroga             = extractProrroga(content);
 

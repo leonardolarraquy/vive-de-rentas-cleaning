@@ -31,7 +31,7 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
 		String tipoDeContrato       = tipoDeContrato(content);
 		if(tipoDeContrato.length() == 0)
-			revisionManual = "Tipo Contrato.";
+			revisionManual = revisionManual + "Tipo Contrato.";
 		
 		String porcentaje           = extractPorcentaje(content);
 		String porcentajeNum        = extractPorcentajeNum(porcentaje);
@@ -43,7 +43,7 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 
 		String unidad               = Commons.extract(content, "unidad", "(", "PRIMERA");
 		if(unidad.length() > 40)
-			unidad = ParserSmartDepasCompraVentaCompleto.extractUnidad(content);
+			unidad = extractUnidad(content);
 		
 		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);
 
@@ -246,6 +246,25 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 	}
 	*/
 
+	public static String extractUnidad(String texto) {
+		try {
+
+			int index = texto.indexOf("Unidad número:");
+			int index2 = texto.indexOf("\n", index + 15);
+
+			if(index == -1) {
+				index = texto.indexOf("Unidad Inmobiliaria");
+				index2 = texto.indexOf("\n", index + 22);
+			}
+			
+			return texto.substring(index, index2);
+
+		}
+		catch(Exception e) {}
+
+		return "";
+	}
+	
 	public static String extractFechaContrato(String texto) {
 		try {
 
