@@ -30,7 +30,8 @@ public class PdfToTextConverter {
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/cancun-promesa-compra-venta-derecho-fideicomisarios";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/cancun-promesa-compra-venta-derecho-fideicomisarios-mod2/";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/living-universidad-convenio-adhesion/";
-		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/torre-monterrey";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/torre-monterrey";
+		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/toledo-suites";
 		
 		File folder = new File(folderPath);
 
