@@ -21,7 +21,8 @@ public class AccionesManagement extends BaseParser {
 	}
 	
 	public String getFieldsTitle() {
-		return "Otorgamiento|Otorgamiento Num|Moneda|Plazo|Plazo Num|Monto|Monto Num|Rendimiento|Rendimiento Num|Participacion|Accion";
+//		return "Otorgamiento|Otorgamiento Num|Moneda|Plazo|Plazo Num|Monto|Monto Num|Rendimiento|Rendimiento Num|Participacion|Accion";
+		return "MONTO_INVERSION|MONEDA|PLAZO MESES|CAPITAL_INTERESES|RENDIMIENTO|RENDIMIENTO_NUMERO|CLAUSULAS";
 	}
 
 	public String getBeneficiario(String content) {
@@ -55,11 +56,11 @@ public class AccionesManagement extends BaseParser {
 		
 		String monto                = Commons.extract(content, "cantidad total", ".", "CUARTA");
 		
-		String rendimiento    = Commons.extract(content, "más", " por", "CUARTA");
+		String rendimiento          = Commons.extract(content, "más", " por", "CUARTA");
 
-		String participacion  = Commons.extract(content, "participación", ".", "QUINTA");
+		String clausula1            = Commons.toSingleLine(Commons.extract(content, "participación", ".", "QUINTA"));
 		
-		String accion         = Commons.extract(content, "valor", ")", "QUINTA");
+		String clausula2            = Commons.toSingleLine(Commons.extract(content, "valor", ")", "QUINTA"));
 
 		csvWriter.write("|");
 
@@ -67,21 +68,20 @@ public class AccionesManagement extends BaseParser {
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(otorgamiento),
+//						Commons.toSingleLine(otorgamiento),
 						Commons.toSingleLine(otorgamientoNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(plazo),
+//						Commons.toSingleLine(plazo),
 						Commons.toSingleLine(Commons.numericValue(plazo)),
 
-						Commons.toSingleLine(monto),
+//						Commons.toSingleLine(monto),
 						Commons.toSingleLine(Commons.numericValue(monto)),
 
 						Commons.toSingleLine(rendimiento),
 						Commons.toSingleLine(Commons.numericValue(rendimiento)),
 
-						Commons.toSingleLine(participacion),
-						Commons.toSingleLine(accion)
+						'"' + clausula1 + " .\n " + clausula2 + '"'
 						
 						));
 

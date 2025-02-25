@@ -23,7 +23,8 @@ public class ParcialidadesPromesaCompraventa extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Unidad|Manzana|Lote|Fase|Monto Contraprestacion|Monto Num|Moneda|Monto Apartado|Monto Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Clausula Mensualidades|Nr Mensualidades|Nr Mensualidades Num|Cuota Mensual|Moneda Cuota Mensual|Primer Pago Cuota|Primer Pago Cuota Num|Tiempo prometido de construccion (meses)|Prorroga hasta entrega";
+//		return "Unidad|Manzana|Lote|Fase|Monto Contraprestacion|Monto Num|Moneda|Monto Apartado|Monto Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Clausula Mensualidades|Nr Mensualidades|Nr Mensualidades Num|Cuota Mensual|Moneda Cuota Mensual|Primer Pago Cuota|Primer Pago Cuota Num|Tiempo prometido de construccion (meses)|Prorroga hasta entrega";
+		return "UNIDAD|MANZANA|LOTE|FASE|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|NR_MENSUALIDADES|CUOTA_MENSUAL|MONEDA_CUOTA_MENSUAL|FECHA_1ER_PAGO_CUOTA|TIEMPO_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -47,12 +48,12 @@ public class ParcialidadesPromesaCompraventa extends BaseParser {
 
 		String fase               = Commons.extractFase(content);
 
-		String monto              = Commons.extractMonto(content);
-		if(monto.length() == 0 || monto.length() == 0)
+		String montoInversion     = Commons.extractMonto(content);
+		if(montoInversion.length() == 0 || montoInversion.length() == 0)
 			revisionManual     = revisionManual + "Contraprestacion.";
 
-		String montoNum           = Commons.numericValue(monto);
-		String moneda             = Commons.extractMoneda(monto);
+		String montoInversionNum  = Commons.numericValue(montoInversion);
+		String moneda             = Commons.extractMoneda(montoInversion);
 
 		String montoApartado      = Commons.extract(content, "la cantidad", ".", "entregó al");
 		if(montoApartado.length() == 0 || montoApartado.length() == 0)
@@ -102,24 +103,24 @@ public class ParcialidadesPromesaCompraventa extends BaseParser {
 						Commons.toSingleLine(lote),
 						Commons.toSingleLine(fase),
 
-						Commons.toSingleLine(monto),
-						Commons.toSingleLine(montoNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(montoApartado),
+//						Commons.toSingleLine(montoApartado),
 						Commons.toSingleLine(montoApartadoNum),
 
-						Commons.toSingleLine(montoLiquidacion),
+//						Commons.toSingleLine(montoLiquidacion),
 						Commons.toSingleLine(montoLiquidacionNum),
 
-						Commons.toSingleLine(clausulaC),
-						Commons.toSingleLine(mensualidades),
+//						Commons.toSingleLine(clausulaC),
+//						Commons.toSingleLine(mensualidades),
 						Commons.toSingleLine(Commons.numericValue(mensualidades)),
 						
 						Commons.toSingleLine(countaMensual),
 						Commons.toSingleLine(Commons.extractMoneda(countaMensual)),
 
-						Commons.toSingleLine(primerPago),
+//						Commons.toSingleLine(primerPago),
 						Commons.toSingleLine(primerNum),
 
 						Commons.toSingleLine(tipoPrometido),

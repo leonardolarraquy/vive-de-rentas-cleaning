@@ -23,7 +23,8 @@ public class ContadoPromesaCompraventa extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Unidad|Manzana|Lote|Fase|Monto Contraprestacion|Monto Num|Moneda|Monto Apartado|Monto Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Monto Restante a Financiar|Monto Restante a Financiar a Num|Tiempo prometido de construccion (meses)|Prorroga hasta entrega";
+//		return "UNIDAD|MANZANA|LOTE|FASE|MONTO CONTRAPRESTACION|MONTO NUM|MONEDA|MONTO APARTADO|MONTO APARTADO NUM|MONTO LIQUIDACION|MONTO LIQUIDACION NUM|MONTO RESTANTE A FINANCIAR|MONTO RESTANTE A FINANCIAR A NUM|TIEMPO PROMETIDO DE CONSTRUCCION (MESES)|PRORROGA HASTA ENTREGA";
+		return "UNIDAD|MANZANA|LOTE|FASE|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|MONTO_A_FINANCIAR|TIEMPO_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -50,12 +51,12 @@ public class ContadoPromesaCompraventa extends BaseParser {
 
 		String fase               = Commons.extractFase(content);
 
-		String contraprestacion   = Commons.extractMonto(content);
-		String contraprestacionNum= Commons.numericValue(contraprestacion);
-		if(contraprestacionNum.length() == 0)
+		String montoInversion     = Commons.extractMonto(content);
+		String montoInversionNum  = Commons.numericValue(montoInversion);
+		if(montoInversionNum.length() == 0)
 			revisionManual     = revisionManual + "Contraprestacion.";				
 
-		String moneda             = Commons.extractMoneda(contraprestacion);
+		String moneda             = Commons.extractMoneda(montoInversion);
 
 		String montoApartado      = Commons.extract(content, "la cantidad", ".", "entregó al");
 		if(montoApartado.length() == 0 || montoApartado.length() == 0)
@@ -83,17 +84,17 @@ public class ContadoPromesaCompraventa extends BaseParser {
 
 						Commons.toSingleLine(fase),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(montoApartado),
+//						Commons.toSingleLine(montoApartado),
 						Commons.toSingleLine(montoApartadoNum),
 
-						Commons.toSingleLine(montoLiquidacion),
+//						Commons.toSingleLine(montoLiquidacion),
 						Commons.toSingleLine(montoLiquidacionNum),
 
-						Commons.toSingleLine(montoaFinanciar),
+//						Commons.toSingleLine(montoaFinanciar),
 						Commons.toSingleLine(montoaFinanciarNum),
 
 						Commons.toSingleLine(posesion),

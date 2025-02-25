@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public abstract class BaseParser {
 
-	public static final String BASE_TITLE = "Tipo Contrato|Nombre Proyecto|Nombre del archivo|Link a archivo|Tags|ENAJENANTE|Razon Social ADQUIRENTE|Nombres ADQUIRENTE|Apellido Paterno ADQUIRENTE|Apellido Materno ADQUIRENTE|P. Fisica|P. Moral|Clave Unica|CURP|Clave RFC|RFC|Fecha Nacimiento|Direccion|Nacionalidad|Estado Civil|Mail 1|Mail 2|Mail 3|Beneficiario|Fecha Contrato|Fecha Contrato Numerica|Revision Manual|";
+	public static final String BASE_TITLE = "TIPO_CONTRATO|NOMBRE_PROYECTO|NOMBRE_ARCHIVO|LINK_A_ARCHIVO|TAGS|ENAJENANTE|RAZON_SOCIAL|NOMBRE|APELLIDO_PATERNO|APELLIDO_MATERNO|P_FISICA|P_MORAL|CLAVE_UNICA|CURP|CLAVE_RFC|RFC|FECHA_NACIMIENTO|DIRECCION|NACIONALIDAD|ESTADO_CIVIL|MAIL_1|MAIL_2|MAIL_3|BENEFICIARIO|FECHA_CONTRATO_STR|FECHA_CONTRATO|REVISION_MANUAL|";
 
 	public abstract String getTipoContrato();
 
@@ -134,7 +134,6 @@ public abstract class BaseParser {
 	}
 
 	public String getBeneficiario(String content) {
-//		String beneficiario       = Commons.extract(content, " a ", ",", " BENEFICIARIO");
 		String beneficiario       = Commons.extract(content, " a ", ",", "como su");
 
 		if(beneficiario.length() > 0)
@@ -206,8 +205,9 @@ public abstract class BaseParser {
 
 				String beneficiario       = this.getBeneficiario(content);
 						
-				String fechaContrato      = fechaContrato(content);
-				String fechaContratoNum   = Commons.convertirFecha(fechaContrato);
+				String fechaContrato      = this.fechaContrato(content);
+				String fechaContratoNum   = this.fechaContratoNum(fechaContrato);
+				
 				if(fechaContratoNum.length() == 0)
 					revisionManual = revisionManual + "Fecha Contrato.";
 
@@ -268,6 +268,10 @@ public abstract class BaseParser {
 		}
 	}
 
+	public String fechaContratoNum(String texto) {
+		return Commons.convertirFecha(texto);
+	}
+	
 	public String fechaContrato(String texto) {
 		try {
 

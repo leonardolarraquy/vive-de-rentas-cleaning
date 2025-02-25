@@ -4,7 +4,7 @@ public class LinkParser {
 	
 	public static void main(String[] args) {
 		
-		String links = "https://drive.google.com/file/d/12HUCJHD7aMTHfYEKyugORK432i9kC3xB/view?usp=drive_link, https://drive.google.com/file/d/1a8BguaBxEkB17KntfmJlWnghsKNnoduZ/view?usp=drive_link, https://drive.google.com/file/d/1FxkpPe7kH9QBeCJF2yBT1q2ZS2-yNVz6/view?usp=drive_link";
+		String links = "https://drive.google.com/file/d/1GH7n8fQv3MzCfsdVmq448wQwGaTFwdZX/view?usp=drive_link, https://drive.google.com/file/d/1iz1UoJDwgefbLGrJiZWihgr-vaYOSZ2N/view?usp=drive_link, https://drive.google.com/file/d/10ql1Ma6rO6EZhSm2vqGcgs5tqlppQPPw/view?usp=drive_link, https://drive.google.com/file/d/1FwUEcmGSdxIqB4uhXamTFjjHYbyUr3v7/view?usp=drive_link, https://drive.google.com/file/d/1NlXO7Bkyoq6h7EsL8LuCPZ2EPvVlK6xH/view?usp=drive_link, https://drive.google.com/file/d/1k20qBb5MfxwOO3SZNbzwtXliC8XDF4hc/view?usp=drive_link, https://drive.google.com/file/d/1S42LR25LfFFAzn9cl_CixghSvL4_53rH/view?usp=drive_link, https://drive.google.com/file/d/1qIbSM6Oq-7cWKi6WfnNJdBWiLuSd-5c1/view?usp=drive_link";
 		String[] arr = links.split(",");
 		
 		for(String x: arr) {
