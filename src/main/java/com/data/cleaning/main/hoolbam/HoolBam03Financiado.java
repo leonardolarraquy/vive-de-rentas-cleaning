@@ -23,7 +23,8 @@ public class HoolBam03Financiado extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "% Fraccion|% Fraccion Num|Participacion|Participacion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Enganche|Enganche Num|Primer Pago|Primer Pago Num|Nr de Mensualidades|Nr de Mensualidades Num|Monto Cuota|Monto Cuota Num|Valor a Cubrir|Valor a Cubrir Num|Valor restante|Valor restante Num|Forma de Pago|Financiamiento|Opcion de compra|Constitucion|Devolucion|Vigencia|Operacion|Plazo Meses";
+//		return "% Fraccion|% Fraccion Num|Participacion|Participacion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Enganche|Enganche Num|Primer Pago|Primer Pago Num|Nr de Mensualidades|Nr de Mensualidades Num|Monto Cuota|Monto Cuota Num|Valor a Cubrir|Valor a Cubrir Num|Valor restante|Valor restante Num|Forma de Pago|Financiamiento|Opcion de compra|Constitucion|Devolucion|Vigencia|Operacion|Plazo Meses";
+		return "PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_RESTO_ENGANCHE|FECHA_1ER_PAGO|NR_MENSUALIDADES|CUOTA_MENSUAL|MONTO_A_FINANCIAR_PARCIALIDADES|BALLOON_PAYMENT|OPCIONES PAGO BALOON PAYMENT|CONSTITUCION|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {
@@ -34,14 +35,14 @@ public class HoolBam03Financiado extends BaseParser {
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
 		
 		String porcDerechos         = Commons.extract(content, "correspondientes", ")") + ")";
-		String porcDerechosNum      = extractParteDecimal(porcDerechos);
+		String porcDerechosNum      = extractParteDecimal(porcDerechos) + "%";
 
-		String participacion        = Commons.extract(content, "participación equivalente", "(");
-		String participacionNum     = extractParteDecimal(participacion);
+//		String participacion        = Commons.extract(content, "participación equivalente", "(");
+//		String participacionNum     = extractParteDecimal(participacion);
 
-		String contraprestacion     = extractContraprestacion(content);
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = extractContraprestacion(content);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String apartado             = Commons.extract(content, "la cantidad", ".", "A. Previo");
 		String enganche             = Commons.extract(content, "la cantidad", ".", "B. El");
@@ -66,9 +67,9 @@ public class HoolBam03Financiado extends BaseParser {
 		if(valorRestanteNum.length() == 0)
 			revisionManual = revisionManual + "Valor Restante.";
 		
-		String formaDePago          = Commons.extract(content, "Primera", "\n", "TERCERA.");
-		String financiamiento       = Commons.extract(content, "Segunda", "\n", "TERCERA.");
-		String oferta               = Commons.extract(content, "Tercera", "\n", "TERCERA.");
+		String formaDePago          = Commons.toSingleLine(Commons.extract(content, "Primera", "\n", "TERCERA."));
+		String financiamiento       = Commons.toSingleLine(Commons.extract(content, "Segunda", "\n", "TERCERA."));
+		String opcionDeCompra       = Commons.toSingleLine(Commons.extract(content, "Tercera", "\n", "TERCERA."));
 						
 		String constitucion         = Commons.extract(content, "La constitución", ",", "CUARTA");
 
@@ -92,41 +93,41 @@ public class HoolBam03Financiado extends BaseParser {
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(porcDerechos),
+//						Commons.toSingleLine(porcDerechos),
 						Commons.toSingleLine(porcDerechosNum),
 
-						Commons.toSingleLine(participacion),
-						Commons.toSingleLine(participacionNum),
+//						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacionNum),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadSimple),
 						
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 						
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(Commons.numericValue(apartado)),
-						Commons.toSingleLine(enganche),
+						
+//						Commons.toSingleLine(enganche),
 						Commons.toSingleLine(Commons.numericValue(enganche)),
 						
-						Commons.toSingleLine(primerPago),
+//						Commons.toSingleLine(primerPago),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(primerPago)),
 
-						Commons.toSingleLine(mensualidades),
+//						Commons.toSingleLine(mensualidades),
 						Commons.toSingleLine(Commons.numericValue(mensualidades)),
 
-						Commons.toSingleLine(montoCuota),
+//						Commons.toSingleLine(montoCuota),
 						Commons.toSingleLine(Commons.numericValue(montoCuota)),
 
-						Commons.toSingleLine(valorACubrir),
+//						Commons.toSingleLine(valorACubrir),
 						Commons.toSingleLine(Commons.numericValue(valorACubrir)),
-						Commons.toSingleLine(valorRestante),
+						
+//						Commons.toSingleLine(valorRestante),
 						Commons.toSingleLine(valorRestanteNum),
 
-						Commons.toSingleLine(formaDePago),
-						Commons.toSingleLine(financiamiento),
-						Commons.toSingleLine(oferta),
+						'"' + formaDePago + " .\n" + financiamiento + " .\n" + opcionDeCompra + '"',
 						
 						Commons.toSingleLine(constitucion),
 						Commons.toSingleLine(devolucion),

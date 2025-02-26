@@ -21,7 +21,8 @@ public class HoolBam01Fractional extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "% Fraccion|% Fraccion Num|% Participacion|% Participacion Num|Unidad|Unidad Abrev.|Derecho de uso|Contraprestacion|Contraprestacion Num|Moneda|Consitucion|Devolucion|Vigencia|Entrega|Fecha Entrega Num|Plazo";
+//		return "% Fraccion|% Fraccion Num|% Participacion|% Participacion Num|Unidad|Unidad Abrev.|Derecho de uso|Contraprestacion|Contraprestacion Num|Moneda|Consitucion|Devolucion|Vigencia|Entrega|Fecha Entrega Num|Plazo";
+		return "PORC_PROPIEDAD|PORC_PARTICIPACION|UNIDAD|DERECHO_DE_USO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|TIEMPO_DE_ENTREGA|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {
@@ -31,11 +32,11 @@ public class HoolBam01Fractional extends BaseParser {
 	
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
 		
-		String porcDerechos         = Commons.extract(content, "correspondientes", ")") + ")";
-		String porcDerechosNum      = Commons.extractParteDecimal(porcDerechos);
-		if(porcDerechosNum.length() > 0)
-			porcDerechosNum  = porcDerechosNum + "%";
-		else revisionManual  = revisionManual + "Fraccion.";
+		String porcPropiedad        = Commons.extract(content, "correspondientes", ")") + ")";
+		String porcPropiedadNum     = Commons.extractParteDecimal(porcPropiedad);
+		if(porcPropiedadNum.length() > 0)
+			porcPropiedadNum  = porcPropiedadNum + "%";
+		else revisionManual  = revisionManual + "PORC Propiedad.";
 
 		String participacion        = Commons.extract(content, "equivalente", "(");
 		String participacionNum     = Commons.extractParteDecimal(participacion);
@@ -88,18 +89,18 @@ public class HoolBam01Fractional extends BaseParser {
 				String.join("|",
 						revisionManual, 
 						
-						Commons.toSingleLine(porcDerechos),
-						Commons.toSingleLine(porcDerechosNum),
+//						Commons.toSingleLine(porcPropiedad),
+						Commons.toSingleLine(porcPropiedadNum),
 
-						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacion),
 						Commons.toSingleLine(participacionNum),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadSimple),
 						
 						Commons.toSingleLine(derecho),
 
-						Commons.toSingleLine(contraprestacion),
+//						Commons.toSingleLine(contraprestacion),
 						Commons.toSingleLine(contraprestacionNum),
 						Commons.toSingleLine(moneda),
 

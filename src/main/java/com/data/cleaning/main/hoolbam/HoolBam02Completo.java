@@ -23,7 +23,8 @@ public class HoolBam02Completo extends BaseParser{
 	}
 
 	public String getFieldsTitle() {
-		return "Derechos|Derecho Num|Participacion|Participacion Num|Unidad|Unidad Abrev.|Derecho|Contraprestacion|Contraprestacion Num|Moneda|Consitucion|Devolucion|Entrega|Entrega Num|Plazo";
+//		return "Derechos|Derecho Num|Participacion|Participacion Num|Unidad|Unidad Abrev.|Derecho|Contraprestacion|Contraprestacion Num|Moneda|Consitucion|Devolucion|Entrega|Entrega Num|Plazo";
+		return "PARTICIPACION_NUM|UNIDAD|DERECHO_DE_USO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|TIEMPO_DE_ENTREGA|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -32,8 +33,8 @@ public class HoolBam02Completo extends BaseParser{
 	}
 	
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
-		String porcDerechos         = Commons.extract(content, "correspondientes", ")") + ")";
-		String porcDerechosNum      = extractParteDecimal(porcDerechos);
+//		String porcDerechos         = Commons.extract(content, "correspondientes", ")") + ")";
+//		String porcDerechosNum      = extractParteDecimal(porcDerechos);
 
 		String participacion        = Commons.extract(content, "participación equivalente", "(");
 		String participacionNum     = extractParteDecimal(participacion);
@@ -50,17 +51,17 @@ public class HoolBam02Completo extends BaseParser{
 		if(derecho.indexOf(";") > 0)
 			derecho = derecho.substring(0, derecho.indexOf(";"));
 
-		String contraprestacion     = extractContraprestacion(content);
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = extractContraprestacion(content);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
-		if(contraprestacionNum.length() == 0) {
-			contraprestacion = "";
-			revisionManual   = revisionManual + "Contraprestacion.";
+		if(montoInversionNum.length() == 0) {
+			montoInversion = "";
+			revisionManual   = revisionManual + "Monto Inversion.";
 			moneda           = "";
 		}
 
-		String constitucion         = Commons.extract(content, "La constitución", ",", "CUARTA");
+		String obligacionesEnajenante = Commons.extract(content, "La constitución", ",", "CUARTA");
 
 		String devolucion           = Commons.extract(content, "devolverá", "naturales", "CUARTA");
 
@@ -82,22 +83,22 @@ public class HoolBam02Completo extends BaseParser{
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(porcDerechos),
-						Commons.toSingleLine(porcDerechosNum),
+//						Commons.toSingleLine(porcDerechos),
+//						Commons.toSingleLine(porcDerechosNum),
 
-						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacion),
 						Commons.toSingleLine(participacionNum),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadSimple),
 						
 						Commons.toSingleLine(derecho),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(constitucion),
+						Commons.toSingleLine(obligacionesEnajenante),
 						Commons.toSingleLine(devolucion),
 
 						Commons.toSingleLine(entrega),
