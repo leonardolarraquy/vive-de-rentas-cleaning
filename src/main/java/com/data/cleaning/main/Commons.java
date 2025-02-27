@@ -40,8 +40,8 @@ public class Commons {
 		}
 
 		Arrays.sort(txtFiles, (file1, file2) -> file1.getName().compareToIgnoreCase(file2.getName()));
-		
-		return txtFiles;
+
+        return txtFiles;
 
 	}
 

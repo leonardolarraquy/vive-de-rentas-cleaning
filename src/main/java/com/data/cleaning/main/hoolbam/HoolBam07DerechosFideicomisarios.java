@@ -21,7 +21,8 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Torre|Participacion|Participacion Num|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Constitucion|Vigencia|Prorroga|Entrega|Fecha Entrega Num";
+//		return "Torre|Participacion|Participacion Num|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Constitucion|Vigencia|Prorroga|Entrega|Fecha Entrega Num";
+		return "TORRE|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|OBLIGACIONES_ENAJENANTE|VIGENCIA_CONTRATO|PRORROGA_DE_ENTREGA|FECHA_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -51,11 +52,12 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 
 		String participacion        = Commons.extract(content, "equivalente a", "sobre", "PRIMERA");
 
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "PRIMERA.");
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "PRIMERA.");
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
+		
 		String apartado             = Commons.extract(content, "cantidad de", "por", "Previo a");
-		String obligacion           = Commons.extract(content, "valor de", "misma", "se obliga");
+		String liquidacion          = Commons.extract(content, "valor de", "misma", "se obliga");
 
 		String constitucion         = Commons.extract(content, "La", "que", "CUARTA");
 		String vigencia             = Commons.extract(content, "estará", ",", "SEXTA");
@@ -77,24 +79,24 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 
 						Commons.toSingleLine(torre),
 
-						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacion),
 						Commons.toSingleLine(Commons.numericValue(participacion) + "%"),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(Commons.numericValue(apartado)),
 
-						Commons.toSingleLine(obligacion),
-						Commons.toSingleLine(Commons.numericValue(obligacion)),
+//						Commons.toSingleLine(liquidacion),
+						Commons.toSingleLine(Commons.numericValue(liquidacion)),
 
 						Commons.toSingleLine(constitucion),
 						Commons.toSingleLine(vigencia),
 						Commons.toSingleLine(plazo),
 
-						Commons.toSingleLine(fechaDeEntrega),
+//						Commons.toSingleLine(fechaDeEntrega),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(fechaDeEntrega))));
 
 	}

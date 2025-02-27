@@ -21,7 +21,8 @@ public class LiveRiveraFractional extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Tickets|Tickets Num|% Fraccion|% Fraccion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Carta Garantia|Opciones de formalizacion de contrato|Mensualidad en la que toma decision de contrato|Obligaciones Enajenante|Plazo de penalizacion tras entrega|Vigencia|Unidad Anexo|Forma de Pago|Plazo Garantia|Rentabilidad Anual|Rentabilidad Anual Num|Equity";
+//		return "Tickets|Tickets Num|% Fraccion|% Fraccion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Carta Garantia|Opciones de formalizacion de contrato|Mensualidad en la que toma decision de contrato|Obligaciones Enajenante|Plazo de penalizacion tras entrega|Vigencia|Unidad Anexo|Forma de Pago|Plazo Garantia|Rentabilidad Anual|Rentabilidad Anual Num|Equity";
+		return "NR_TICKETS|PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|CARTA_GARANTIA|OPCIONES_DE_FORMALIZACION_DE_CONTRATO|MENSUALIDAD_AVISO_OPCIONES_SALIDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA|PLAZO_PAGO_RENTABILIDAD|TASA_ANUAL_RENTABILIDAD_GARANTIZADA|EQUITY_INSTANTANEO";
 	}
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
@@ -39,9 +40,9 @@ public class LiveRiveraFractional extends BaseParser {
 		if(unidadAbrev.length() == 0)
 			revisionManual = revisionManual + "Unidad.";					
 
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String apartado             = Commons.extract(content, "entregó", ")", "SEGUNDA");
 		if(apartado.length() > 0)
@@ -60,8 +61,11 @@ public class LiveRiveraFractional extends BaseParser {
 			revisionManual = revisionManual + "Liquidacion.";					
 
 		String cartaGarantia        = Commons.extract(content, "mediante", "anexa", "Adicionalmente");
-		if(cartaGarantia.length() == 0)
-			revisionManual = revisionManual + "Carta Garantia.";
+		if(cartaGarantia.length() == 0) {
+			cartaGarantia = "NO";
+			revisionManual = revisionManual + "Carta Garantia.";			
+		}
+		else cartaGarantia = "SI";
 
 		String opcionesFinalizacion = Commons.extract(content, "mediante", "que", "estipulado").replaceAll("mediante la", "");
 		if(opcionesFinalizacion.indexOf(",") > 0)
@@ -83,11 +87,11 @@ public class LiveRiveraFractional extends BaseParser {
 		if(beneficiario.length() > 0)
 			beneficiario = beneficiario.substring(2, beneficiario.length());
 
-		String unidadAnexo          = Commons.extract(content, "Unidad número:", "\n", "Unidad Inmobiliaria:").replaceAll("Unidad número: ", "");
+//		String unidadAnexo          = Commons.extract(content, "Unidad número:", "\n", "Unidad Inmobiliaria:").replaceAll("Unidad número: ", "");
 
-		String formaDePago          = Commons.extract(content, "Forma de Pago:", "EL", "ANEXO").replaceAll("Forma de Pago:", "");
-		if(formaDePago.indexOf(".") > 0)
-			formaDePago = formaDePago.substring(0, formaDePago.indexOf("."));	
+//		String formaDePago          = Commons.extract(content, "Forma de Pago:", "EL", "ANEXO").replaceAll("Forma de Pago:", "");
+//		if(formaDePago.indexOf(".") > 0)
+//			formaDePago = formaDePago.substring(0, formaDePago.indexOf("."));	
 
 		String plazoGarantia        = Commons.extract(content, "exclusivamente", "denominado", "Adquirente única y exclusivamente");
 		String rentabilidadAnual    = Commons.extract(content, "correspondiente al", ",", "exclusivamente");
@@ -102,23 +106,23 @@ public class LiveRiveraFractional extends BaseParser {
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacion),
 						Commons.toSingleLine(participacionNum),
 
-						Commons.toSingleLine(participacionPorc),
+//						Commons.toSingleLine(participacionPorc),
 						Commons.toSingleLine(participacionPorcNum),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadAbrev),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(apartadoNum),
 
-						Commons.toSingleLine(liquidacion),
+//						Commons.toSingleLine(liquidacion),
 						Commons.toSingleLine(liquidacionNum),
 
 						Commons.toSingleLine(cartaGarantia),
@@ -130,12 +134,12 @@ public class LiveRiveraFractional extends BaseParser {
 						Commons.toSingleLine(plazo),
 						Commons.toSingleLine(vigencia),
 
-						Commons.toSingleLine(unidadAnexo),
-						Commons.toSingleLine(formaDePago),
+//						Commons.toSingleLine(unidadAnexo),
+//						Commons.toSingleLine(formaDePago),
 
 						Commons.toSingleLine(plazoGarantia),
 
-						Commons.toSingleLine(rentabilidadAnual),
+//						Commons.toSingleLine(rentabilidadAnual),
 						Commons.toSingleLine(Commons.numericValue(rentabilidadAnual) + "%"),
 
 						Commons.toSingleLine(equity)));

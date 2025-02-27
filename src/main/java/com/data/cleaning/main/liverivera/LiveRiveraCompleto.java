@@ -21,7 +21,8 @@ public class LiveRiveraCompleto extends BaseParser {
 	}
 	
 	public String getFieldsTitle() {
-		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga|Unidad Anexo";
+//		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga|Unidad Anexo";
+		return "UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|VIGENCIA_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {
@@ -38,14 +39,14 @@ public class LiveRiveraCompleto extends BaseParser {
 		if(unidadAbrev.length() == 0)
 			revisionManual = revisionManual + "Unidad.";
 		
-		String tipoContrato         = Commons.extract(content, "mediante", "sobre", "PRIMERA.");
-		if(tipoContrato.indexOf(".") > 0)
-			tipoContrato = tipoContrato.substring(0, tipoContrato.indexOf("."));
+//		String tipoContrato         = Commons.extract(content, "mediante", "sobre", "PRIMERA.");
+//		if(tipoContrato.indexOf(".") > 0)
+//			tipoContrato = tipoContrato.substring(0, tipoContrato.indexOf("."));
 		
 
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String apartado             = Commons.extract(content, "entregó", ")", "SEGUNDA");
 		if(apartado.length() > 0)
@@ -70,7 +71,7 @@ public class LiveRiveraCompleto extends BaseParser {
 		
 		String prorroga             = Commons.extract(content, "prorrogarse", " en ", "ENTREGA DEL");
 
-		String unidadAnexo          = Commons.extract(content, "Unidad número:", "\n", "Unidad Inmobiliaria:").replaceAll("Unidad número: ", "");
+//		String unidadAnexo          = Commons.extract(content, "Unidad número:", "\n", "Unidad Inmobiliaria:").replaceAll("Unidad número: ", "");
 
 		csvWriter.write("|");
 		
@@ -78,27 +79,29 @@ public class LiveRiveraCompleto extends BaseParser {
 				String.join("|",
 						revisionManual, 
 						
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadAbrev),
 
-						Commons.toSingleLine(tipoContrato),
+//						Commons.toSingleLine(tipoContrato),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(apartadoNum),
 						
-						Commons.toSingleLine(liquidacion),
+//						Commons.toSingleLine(liquidacion),
 						Commons.toSingleLine(liquidacionNum),
 
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(entrega),
+						
+//						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
-						Commons.toSingleLine(prorroga),
+						Commons.toSingleLine(prorroga)
 												
-						Commons.toSingleLine(unidadAnexo)));
+//						Commons.toSingleLine(unidadAnexo)
+						));
 
 	}
 

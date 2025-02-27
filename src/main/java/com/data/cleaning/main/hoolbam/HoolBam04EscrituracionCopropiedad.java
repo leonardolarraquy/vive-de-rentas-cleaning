@@ -23,7 +23,8 @@ public class HoolBam04EscrituracionCopropiedad extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Porcentaje de Copropiedad|Porcentaje de Copropiedad Num|Unidad|Unidad Num|Proposito|Derechos|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Valor restante|Valor restante Num|Forma de Pago|Plazo";
+//		return "Porcentaje de Copropiedad|Porcentaje de Copropiedad Num|Unidad|Unidad Num|Proposito|Derechos|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Valor restante|Valor restante Num|Forma de Pago|Plazo";
+		return "PORC_PROPIEDAD|UNIDAD|PROPOSITO_DE_LA_INVERSION|DERECHO_DE_USO|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|PRORROGA_DE_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -35,7 +36,7 @@ public class HoolBam04EscrituracionCopropiedad extends BaseParser {
 		String porcentaje           = Commons.extract(content, "porcentaje correspondiente", "de");
 		String porcentajeNum        = extractParteDecimal(porcentaje);
 		if(porcentajeNum.length() == 0)
-			revisionManual = revisionManual + "Porcentaje.";
+			revisionManual = revisionManual + "Porcentaje Propiedad.";
 		else {
 			porcentajeNum = porcentajeNum + "%";
 		}
@@ -48,22 +49,22 @@ public class HoolBam04EscrituracionCopropiedad extends BaseParser {
 		String unidadSimple         = extractUnidad(unidad);
 		
 		String proposito            = Commons.extract(content, "propósitos", "pero", "OBJETO");
-		String derecho              = Commons.extract(content, "derecho", ".", "OBJETO");
+		String derecho              = Commons.extract(content, "derecho a", ".", "OBJETO");
 		
-		String contraprestacion     = extractContraprestacion(content);
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
-		if(contraprestacionNum.length() == 0)
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "OBJETO");
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
+		if(montoInversionNum.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
 		String apartado             = Commons.extract(content, "la cantidad", ".", "entregó al");
-		String montoRestante        = Commons.extract(content, "la cantidad", ".", "se obliga");
+		String montoLiquidacion     = Commons.extract(content, "la cantidad", ".", "se obliga");
 
-		String plazo                = Commons.extract(content, "plazo", "en ", "SÉPTIMA");
+		String prorrogaDeEntrega    = Commons.extract(content, "plazo", "en ", "SÉPTIMA");
 
-		String formaDePago          = Commons.extract(content, "Forma de Pago:", "EL", "ANEXO");
-		if(formaDePago.indexOf(".") > 0)
-			formaDePago = formaDePago.substring(0, formaDePago.indexOf("."));
+//		String formaDePago          = Commons.extract(content, "Forma de Pago:", "EL", "ANEXO");
+//		if(formaDePago.indexOf(".") > 0)
+//			formaDePago = formaDePago.substring(0, formaDePago.indexOf("."));
 
 		csvWriter.write("|");
 
@@ -71,27 +72,28 @@ public class HoolBam04EscrituracionCopropiedad extends BaseParser {
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(porcentaje),
+//						Commons.toSingleLine(porcentaje),
 						Commons.toSingleLine(porcentajeNum),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadSimple),
 						
 						Commons.toSingleLine(proposito),
 						Commons.toSingleLine(derecho),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(contraprestacion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 						
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(Commons.numericValue(apartado)),
-						Commons.toSingleLine(montoRestante),
-						Commons.toSingleLine(Commons.numericValue(montoRestante)),
+						
+//						Commons.toSingleLine(montoLiquidacion),
+						Commons.toSingleLine(Commons.numericValue(montoLiquidacion)),
 
-						Commons.toSingleLine(formaDePago),
+//						Commons.toSingleLine(formaDePago),
 
-						Commons.toSingleLine(plazo)));
+						Commons.toSingleLine(prorrogaDeEntrega)));
 
 	}
 
@@ -115,24 +117,5 @@ public class HoolBam04EscrituracionCopropiedad extends BaseParser {
 		Matcher matcher = pattern.matcher(content);
 
 		return matcher.find() ? matcher.group(1) : "";
-	}
-
-	public static String extractContraprestacion(String content) {
-		try {
-			int contraprestacion = content.indexOf("CONTRAPRESTACI");
-			if(contraprestacion == -1)
-				return "";
-
-			int index = content.indexOf("cantidad", contraprestacion);
-			int index2 = content.indexOf(")", index + 30);//buscar la coma despues de la coma del monto
-
-			return content.substring(index, index2 + 2);
-
-		}
-		catch(Exception e) {
-
-		}
-
-		return "";
 	}
 }

@@ -33,9 +33,22 @@ public class HoolBam06GananciaCapital extends BaseParser{
 
 		return mutuante;
 	}
+	
+	public String getDireccionAdquirente(String content) {
+		String str = Commons.extract(content, "su domicilio en", "/").replaceAll("su domicilio en:", "");
+		if(str.indexOf("D.") > 0)
+			str = str.substring(0, str.indexOf("D."));
+
+		if(str.indexOf("C.") > 0)
+			str = str.substring(0, str.indexOf("C."));
+
+		return str;
+	}
+
 
 	public String getFieldsTitle() {
-		return "Contraprestacion|Contraprestacion Num|Moneda|Numero Cuotas|Numero Cuotas Num|Mensualidades|Mensualidades Num|Termino|Termino Num|Interes Moratorio|Interes Moratorio Num|Adquisicion|Adquisicion Num|Unidad|Unidad Abrev";
+//		return "Contraprestacion|Contraprestacion Num|Moneda|Numero Cuotas|Numero Cuotas Num|Mensualidades|Mensualidades Num|Termino|Termino Num|Interes Moratorio|Interes Moratorio Num|Adquisicion|Adquisicion Num|Unidad|Unidad Abrev";
+		return "MONTO_INVERSION|MONEDA|NR_MENSUALIDADES|CUOTA_MENSUAL|PLAZO_DEVOLUCION_CAPITAL_E_INTERESES|TASA_INTERES_MORATORIO_MENSUAL|OPCIONES_DE_SALIDA|PORC_PROPIEDAD|UNIDAD";
 	}
 
 	public static void main(String[] args) {
@@ -44,9 +57,9 @@ public class HoolBam06GananciaCapital extends BaseParser{
 	}
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "PRIMERA.");
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "PRIMERA.");
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String numeroCuotas        = Commons.extract(content, "obliga a efectuar", "por");
 		String mensualidades        = Commons.extract(content, "cantidad ", "en ", "SEGUNDA");
@@ -54,8 +67,10 @@ public class HoolBam06GananciaCapital extends BaseParser{
 
 		String interes              = Commons.extract(content, "estableciéndose un", "(", "TERCERA");
 
+		String clausulaQuinta       = Commons.extract(content, "QUINTA", "SEXTA");
+		
 		String porcDerechos         = Commons.extract(content, "adquisición del", "correspondiente", "QUINTA");
-		String porcDerechosNum      = Commons.extractParteDecimal(porcDerechos);
+		String porcDerechosNum      = Commons.extractParteDecimal(porcDerechos) + "%";
 
 		String unidad               = Commons.extract(content, "Inmobiliaria No.", "de", "QUINTA");
 		if(unidad.length() == 0)
@@ -69,27 +84,29 @@ public class HoolBam06GananciaCapital extends BaseParser{
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(numeroCuotas),
+//						Commons.toSingleLine(numeroCuotas),
 						Commons.toSingleLine(Commons.numericValue(numeroCuotas)),
 
-						Commons.toSingleLine(mensualidades),
+//						Commons.toSingleLine(mensualidades),
 						Commons.toSingleLine(Commons.numericValue(mensualidades)),
 
-						Commons.toSingleLine(termino),
+//						Commons.toSingleLine(termino),
 						Commons.toSingleLine(Commons.numericValue(termino)),
 
-						Commons.toSingleLine(interes),
+//						Commons.toSingleLine(interes),
 						Commons.toSingleLine(Commons.numericValue(interes) + "%"),
 
-						Commons.toSingleLine(porcDerechos),
+						Commons.toSingleLine(clausulaQuinta),
+						
+//						Commons.toSingleLine(porcDerechos),
 						Commons.toSingleLine(porcDerechosNum),
 
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadSimple)));
 	}
 }
