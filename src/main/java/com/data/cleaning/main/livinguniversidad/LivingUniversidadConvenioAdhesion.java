@@ -27,7 +27,8 @@ public class LivingUniversidadConvenioAdhesion extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Contrato|Numero Contrato|Serie|Ubicacion|Contraprestacion|Contraprestacion Num|Moneda|Participacion|Participacion Num|Sustituto";
+//		return "Contrato|Numero Contrato|Serie|Ubicacion|Contraprestacion|Contraprestacion Num|Moneda|Participacion|Participacion Num|Sustituto";
+		return "CONTRATO|NR_FIDECOMISO|SERIE_FIDECOMISO|UBICACION_PROPIEDAD|MONTO_INVERSION|MONEDA|PORC_PROPIEDAD";
 	}
 	
 	public static void main(String[] args) {
@@ -42,7 +43,7 @@ public class LivingUniversidadConvenioAdhesion extends BaseParser {
 
 	@Override
 	public String getBeneficiario(String content) {
-		return "";
+		return Commons.extract(content, "en este acto designa", "como").replaceAll("en este acto designa", "").replaceAll("al señor ", "").replaceAll("a la señora ", "");
 	}
 	
 	@Override
@@ -52,23 +53,21 @@ public class LivingUniversidadConvenioAdhesion extends BaseParser {
 
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
-		String tipoContrato         = Commons.extract(content, "AL CONTRATO", "IDENTIFICADO").replaceAll("AL CONTRATO DE", "");
+//		String tipoContrato         = Commons.extract(content, "AL CONTRATO", "IDENTIFICADO").replaceAll("AL CONTRATO DE", "");
 		String numeroContrato       = Commons.extract(content, "CON EL", "DENOMINADO");
 
-		String serie                = Commons.extract(content, "denominada", ",", "TERCERO").replaceAll("denominada", "");
+//		String serie                = Commons.extract(content, "denominada", ",", "TERCERO").replaceAll("denominada", "");
+		String serie                = "SERIE C-LIVING UNIVERSIDAD";
 		String ubicacion            = Commons.extract(content, "ubicado", "el cual", "TERCERO").replaceAll("ubicado en", "");
 
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA");
-		if(contraprestacion.length() > 0)
-			contraprestacion += ")";
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA");
+		if(montoInversion.length() > 0)
+			montoInversion += ")";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
-
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String participacion        = Commons.extract(content, "corresponden", "relacionados", "TERCERA").replaceAll("corresponden al", "");
-
-		String sustituto            = Commons.extract(content, "en este acto designa", "como").replaceAll("en este acto designa", "");
 
 		csvWriter.write("|");
 
@@ -76,20 +75,19 @@ public class LivingUniversidadConvenioAdhesion extends BaseParser {
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(tipoContrato),
+						Commons.toSingleLine("FIDEICOMISO IRREVOCABLE DE ADMINISTRACION"),
 						Commons.toSingleLine(numeroContrato),
 						Commons.toSingleLine(serie),
 						Commons.toSingleLine(ubicacion),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(contraprestacion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(participacion),
-						Commons.toSingleLine(Commons.numericValue(participacion)),
-
-						Commons.toSingleLine(sustituto)));
-
+//						Commons.toSingleLine(participacion),
+						Commons.toSingleLine(Commons.numericValue(participacion) + "%")
+						
+						));
 	}
 
 	public String getAdquiriente(String content) {
@@ -105,6 +103,11 @@ public class LivingUniversidadConvenioAdhesion extends BaseParser {
 			adherente = adherente.substring(0, adherente.indexOf(","));	
 
 		return adherente;
+	}
+
+	@Override
+	public String getEnajenante(String content) {
+		return "FIDEICOMISO BMI 85101677 (OCHO CINCO UNO CERO UNO SEIS SIETE SIETE) - VIVE DE LAS RENTAS";
 	}
 
 	public static String extraerEstadoCivil(String contenidoArchivo) {

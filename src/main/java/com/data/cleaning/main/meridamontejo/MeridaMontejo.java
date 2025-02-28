@@ -21,7 +21,8 @@ public class MeridaMontejo extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Terminacion|Vigencia|Unidad Inmobiliaria";
+//		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Terminacion|Vigencia|Unidad Inmobiliaria";
+		return "UBICACION_PROPIEDAD|FECHA_DE_ENTREGA|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION DE_CONTRATO|VIGENCIA_CONTRATO|UNIDAD";
 	}
 
 	public static void main(String[] args) {
@@ -34,20 +35,20 @@ public class MeridaMontejo extends BaseParser {
 		if(ubicacion.length() == 0)
 			revisionManual = revisionManual + "Ubicacion.";
 		
-		String entrega              = Commons.extract(content, "en ", ".", "ENTREGA DEL");
+		String entrega              = Commons.extract(content, "mes", ".", "ENTREGA DEL");
 		
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-		if(contraprestacion.length() == 0)
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		if(montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String constitucion         = Commons.extract(content, "La", ",", "CUARTA");
 		String terminacion          = "no se emitan \"Los Derechos\", devolverá el valor de la Contraprestación a más tardar dentro de los 90 (noventa) días naturales";
-		
-		
 
+		String vigencia             = Commons.extract(content, "hasta", ",", "SEXTA");
+		
 		String unidad               = extractUnidad(content);
 						
 		csvWriter.write("|");
@@ -58,19 +59,19 @@ public class MeridaMontejo extends BaseParser {
 
 						Commons.toSingleLine(ubicacion),
 
-						Commons.toSingleLine(entrega),
+						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
         				Commons.toSingleLine(constitucion),
         				Commons.toSingleLine(terminacion),
+
+        				Commons.toSingleLine(vigencia),
+
         				Commons.toSingleLine(unidad)
-
 				));
-
-				
 	}
 	
 	public static String extractUnidad(String texto) {

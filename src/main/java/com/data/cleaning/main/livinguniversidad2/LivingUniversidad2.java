@@ -21,7 +21,8 @@ public class LivingUniversidad2 extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Unidad Inmobiliaria";
+//		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Unidad Inmobiliaria";
+		return "UBICACION_PROPIEDAD|FECHA_DE_ENTREGA|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|UNIDAD|CARTA_GARANTIA|TASA_INTERES_ANUAL|PLAZO_MESES|FECHA_COMIENZO_PAGO_RENDIMIENTOS";
 	}
 
 	public static void main(String[] args) {
@@ -34,12 +35,12 @@ public class LivingUniversidad2 extends BaseParser {
 		if(ubicacion.length() == 0)
 			revisionManual = revisionManual + "Ubicacion.";
 		
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-		if(contraprestacion.length() == 0)
+		String montoInversion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		if(montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversionNum  = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String constitucion         = Commons.extract(content, "La", ",", "CUARTA");
 
@@ -57,13 +58,17 @@ public class LivingUniversidad2 extends BaseParser {
 
 						Commons.toSingleLine(entrega),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
         				Commons.toSingleLine(constitucion),
-        				Commons.toSingleLine(unidad)
+        				Commons.toSingleLine(unidad),
 
+        				Commons.toSingleLine("NO"),
+        				Commons.toSingleLine(""),
+        				Commons.toSingleLine(""),
+        				Commons.toSingleLine("")
 				));
 
 				

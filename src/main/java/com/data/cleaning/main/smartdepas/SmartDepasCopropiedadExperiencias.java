@@ -23,7 +23,8 @@ public class SmartDepasCopropiedadExperiencias extends BaseParser{
 	}
 
 	public String getFieldsTitle() {
-		return "Unidad|Unidad Abrev|Tipo Contrato|Participacion|Porcentaje Participacion|Monto|Monto Num|Moneda|Vigencia|Redimiento Garantizado|Redimiento Garantizado Num|A partir de|Plazo rendimientos garantizados|Plazo rendimientos garantizados Num|Monto Rendimiento Mensual|Rendimiento Mensual Num|Rendimiento Mensual Moneda|Carta Garantia|Vigilancia Administracion|Equity Instantaneo";
+//		return "Unidad|Unidad Abrev|Tipo Contrato|Participacion|Porcentaje Participacion|Monto|Monto Num|Moneda|Vigencia|Redimiento Garantizado|Redimiento Garantizado Num|A partir de|Plazo rendimientos garantizados|Plazo rendimientos garantizados Num|Monto Rendimiento Mensual|Rendimiento Mensual Num|Rendimiento Mensual Moneda|Carta Garantia|Vigilancia Administracion|Equity Instantaneo";
+		return "UNIDAD|TIPO CONTRATO|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|VIGENCIA_CONTRATO|RENDIMIENTO_GARANTIZADO|TASA_DE_INTERES_ANUAL|FECHA_COMIENZO_RENDIMIENTOS|NR_MENSUALIDADES|CUOTA_MENSUAL|RENDIMIENTO_MENSUAL_MONEDA|CARTA_GARANTIA|ADMINISTRADOR_VIGILANTE|EQUITY_INSTANTANEO";
 	}
 
 	public static void main(String[] args) {
@@ -72,8 +73,11 @@ public class SmartDepasCopropiedadExperiencias extends BaseParser{
 		String rendimientoMensual   = extractMensualidad(content);
 
 		String cartaGarantia        = extractCartaGarantia(content);
-		if(cartaGarantia.length() == 0)
+		if(cartaGarantia.length() == 0) {
 			revisionManual = revisionManual + "Carta Garantia.";
+			cartaGarantia = "NO";
+		}
+		else cartaGarantia = "SI";
 
 		String vigilancia           = extractVigilancia(content);
 
@@ -86,27 +90,29 @@ public class SmartDepasCopropiedadExperiencias extends BaseParser{
 		csvWriter.write(
 				String.join("|",
 						revisionManual, 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(getUnidadAbrev(unidad)),
 
 						Commons.toSingleLine(propiedad),
-						Commons.toSingleLine(participacion),
+						
+//						Commons.toSingleLine(participacion),
 						Commons.toSingleLine(participacionPorc),
 
-						Commons.toSingleLine(inversion),
+//						Commons.toSingleLine(inversion),
 						Commons.toSingleLine(inversionNum),
 						Commons.toSingleLine(moneda),
 
 						Commons.toSingleLine(vigencia),
 
-						Commons.toSingleLine(rendimientoGarant),
+						Commons.toSingleLine("SI"),
 						Commons.toSingleLine(rendimientoGarant.substring(0, 4)),
+						
 						Commons.toSingleLine(aPartirDe),
 
-						Commons.toSingleLine(cantidadCuotas),
+//						Commons.toSingleLine(cantidadCuotas),
 						Commons.toSingleLine(extraerNumeroCuotas(cantidadCuotas)),
 
-						Commons.toSingleLine(rendimientoMensual),
+//						Commons.toSingleLine(rendimientoMensual),
 						Commons.toSingleLine(Commons.numericValue(rendimientoMensual)),
 						Commons.toSingleLine(Commons.extractMoneda(rendimientoMensual)),
 
