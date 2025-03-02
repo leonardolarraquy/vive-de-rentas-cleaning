@@ -232,7 +232,7 @@ public class Commons {
 		if(content == null)
 			return "";
 
-		return content.replaceAll("\\s*\\n\\s*", " ").trim();
+		return content.replaceAll("\\s*\\n\\s*", " ").replaceAll("\\s+", " ").trim();
 	}
 
 	public static String extraerUnidadAbrev(String texto) {

@@ -21,7 +21,8 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 	}
 
 	public String getFieldsTitle() {
-		return "Objeto|Contraprestacion|Contraprestacion Num|Moneda|Clausulas|Vigencia|Entrega|Entrega Num|Prorroga|Unidad|Unidad Abreviada|Forma de Pago";
+//		return "Objeto|Contraprestacion|Contraprestacion Num|Moneda|Clausulas|Vigencia|Entrega|Entrega Num|Prorroga|Unidad|Unidad Abreviada|Forma de Pago";
+		return "OBJETO_DEL_CONTRATO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ADQUIRIENTE|VIGENCIA_CONTRATO|FECHA_ENTREGA|PRORROGA_DE_ENTREGA|UNIDAD|FORMA_DE_PAGO";
 	}
 
 	public static void main(String[] args) {
@@ -34,12 +35,12 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 		if(objeto == null || objeto.length() == 0)
 			revisionManual = revisionManual + "Objeto.";
 
-		String contraprestacion     = extractContraprestacion(content);
-		if(contraprestacion == null || contraprestacion.length() == 0)
+		String montoInversion     = extractContraprestacion(content);
+		if(montoInversion == null || montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String obligacion           = extractObligacion(content);
 		String vigencia             = extractVigencia(content);
@@ -56,8 +57,14 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 		String unidad               = extractUnidad(content);
 		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);
 
-		if(unidadAbrev.length() == 0)
-			revisionManual = revisionManual + "Unidad.";
+		if(unidadAbrev.length() == 0) {
+
+			unidadAbrev   = unidad.substring(unidad.indexOf(":") + 1, unidad.length());
+			
+			if(unidadAbrev.length() == 0) 
+				revisionManual = revisionManual + "Unidad.";
+
+		}
 
 		String formaDePago          = extractFormaDePago(content);
 
@@ -69,17 +76,18 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 						Commons.toSingleLine(objeto),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
 						Commons.toSingleLine(obligacion),
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(entrega),
+
+//						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(entregaNum),
 						Commons.toSingleLine(prorroga),
 
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadAbrev),
 
 						Commons.toSingleLine(formaDePago)));
@@ -99,7 +107,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 			if(index3 != -1 && index3 < index2)
 				index2 = index3;
 
-			return texto.substring(index, index2);
+			return texto.substring(index, index2).replaceAll("Forma de Pago:", "");
 
 		}
 		catch(Exception e) {}
@@ -118,29 +126,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 				index2 = texto.indexOf("\n", index + 22);
 			}
 
-			return texto.substring(index, index2);
-
-		}
-		catch(Exception e) {}
-
-		return "";
-	}
-
-	public static String extractDomicilioAdquiriente(String texto) {
-		try {
-			int index = texto.indexOf("ADQUIRENTE", texto.indexOf("NOVENA. ")) + 12;
-
-			int index2 = texto.indexOf("Cualquiera ", index);
-
-			int index3 = texto.indexOf("México", index);
-			if(index3 != -1 && index3 < index2)
-				index2 = index3 + 6;
-
-			index3 = texto.indexOf("DÉCIMA", index);
-			if(index3 != -1 && index3 < index2)
-				index2 = index3 + 6;
-
-			return texto.substring(index, index2);
+			return texto.substring(index, index2).replaceAll("Unidad Inmobiliaria:", "");
 
 		}
 		catch(Exception e) {}
@@ -242,24 +228,31 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 		return "";
 	}
-
+	
 	public static String extractObligacion(String content) {
 		try {
-			int a      = content.indexOf("alor de los", content.indexOf("SEGUNDA"));
-			if(a == -1)
-				return "";
+			boolean goToEndLine = true;
+			
+			int a      = content.indexOf("manera:", content.indexOf("SEGUNDA"));
+			if(a == -1) {
+				a      = content.indexOf("corresponda.", content.indexOf("SEGUNDA"));
 
-			int index  = content.indexOf("EL", a);
-			int index4 = content.indexOf("El ", a);
+				if(a == -1) {
+					a      = content.indexOf("proceda.", content.indexOf("SEGUNDA"));
 
-			if(index == -1 || (index4 != -1 && index4 < index))
-				index = index4;
+					if(a == -1) {
+						a      = content.indexOf("El", content.indexOf("SEGUNDA"));
+						goToEndLine = false;
+					}
+				}
+			}
+
+			int index  = a;
+			
+			if(goToEndLine)
+				index = content.indexOf("\n", a);
 
 			int index2 = content.indexOf("TERCERA", index);
-			int index3 = content.indexOf("autoriza en este", index);
-
-			if(index3 != -1 && index3 < index2)
-				index2 = index3 - 27;
 
 			return content.substring(index, index2);
 

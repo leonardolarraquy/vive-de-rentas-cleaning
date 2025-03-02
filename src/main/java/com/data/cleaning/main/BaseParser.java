@@ -282,7 +282,11 @@ public abstract class BaseParser {
 				if((index2 - (index + 36)) > 40)
 					index2 = texto.indexOf("EL", index + 10) - 1;
 
-				return Commons.toSingleLine(texto.substring(index + 36, index2)).replaceAll("a los", "").replaceAll("al ", "").replaceAll("a ", "").replaceAll("días ", "").replaceAll("de ", "").replaceAll("del ", "").trim();
+				String res =  Commons.toSingleLine(texto.substring(index + 36, index2)).replaceAll("a los", "").replaceAll("al ", "").replaceAll("a ", "").replaceAll("días ", "").replaceAll("de ", "").replaceAll("del ", "").trim();
+				if(res.indexOf(".") > 0)
+					res = res.substring(0, res.indexOf("."));
+				
+				return res;
 			}
 			
 			index  = texto.indexOf("día", texto.indexOf("lo firman de conformidad"));

@@ -21,7 +21,8 @@ public class ToledoSuites extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Derechos|Emision|Contraprestacion|Contraprestacion Num|Moneda|Devolucion|Porcentaje";
+//		return "Ubicacion|Derechos|Emision|Contraprestacion|Contraprestacion Num|Moneda|Devolucion|Porcentaje";
+		return "UBICACION_PROPIEDAD|PROC_PROPIEDAD|VIGENCIA_DE_CONTRATO|MONTO_INVERSION|MONEDA|DEVOLUCION_POR_TERMINACION_DE_CONTRATO";
 	}
 
 	public static void main(String[] args) {
@@ -34,20 +35,21 @@ public class ToledoSuites extends BaseParser {
 		if(ubicacion.length() == 0)
 			revisionManual = revisionManual + "Ubicacion.";
 		
-		String derechos             = Commons.extract(content, "emisión", ")", "virtud") + ")";
+		String derechos             = Commons.extract(content, "emisión", ")", "virtud");
+		derechos                    = Commons.extractParteDecimal(derechos) + "%";
 
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-		if(contraprestacion.length() == 0)
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		if(montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String devolucion           = Commons.extract(content, "devolverá", ".", "CUARTA");
 
 		String vigencia             = Commons.extract(content, "hasta", ",", "SEXTA");
 		
-		String porcentaje           = Commons.extract(content, "Porcentaje", ")") + ")";
+//		String porcentaje           = Commons.extract(content, "Porcentaje", ")") + ")";
 				
 		csvWriter.write("|");
 
@@ -60,12 +62,12 @@ public class ToledoSuites extends BaseParser {
 						Commons.toSingleLine(derechos),
 						Commons.toSingleLine(vigencia),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-        				Commons.toSingleLine(devolucion),
-        				Commons.toSingleLine(porcentaje)
+        				Commons.toSingleLine(devolucion)
+//        				Commons.toSingleLine(porcentaje)
 
 				));
 

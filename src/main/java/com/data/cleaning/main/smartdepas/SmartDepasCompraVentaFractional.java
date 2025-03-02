@@ -21,7 +21,7 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 	}
 	
 	public String getFieldsTitle() {
-		return "Tipo de contrato|Porcentaje|Porcentaje Num|Participacion|Participacion Num|Unidad|Unidad Abrev|Contraprestacion|Contraprestacion Num|Vigencia|Entrega|Entrega Num";
+		return "TIPO_DE_CONTRATO|PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|VIGENCIA_CONTRATO|FECHA_ENTREGA|CARTA_GARANTIA|PERIODO_PAGO_RENDIMIENTOS_GARANTIZADOS|FECHA_INICIO_COMPUTO_RENDIMIENTOS|RENDIMIENTO_GARANTIZADO_TASA_ANUAL|FECHA_COMIENZO_PAGO_RENDIMIENTOS|GARANTIA_DE_RECOMPRA";
 	}
 	public static void main(String[] args) {
 		SmartDepasCompraVentaFractional parser = new SmartDepasCompraVentaFractional();
@@ -33,13 +33,14 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 		if(tipoDeContrato.length() == 0)
 			revisionManual = revisionManual + "Tipo Contrato.";
 		
-		String porcentaje           = extractPorcentaje(content);
-		String porcentajeNum        = extractPorcentajeNum(porcentaje);
+		String porcentaje           = Commons.extract(content, "equivalente", ")", "OBJETO");
+		String porcentajeNum        = Commons.extractParteDecimal(porcentaje);
 		if(porcentajeNum.length() == 0)
-			revisionManual = revisionManual + "Porcentaje.";
+			 revisionManual = revisionManual + "Porcentaje.";
+		else porcentajeNum += "%";
 
-		String participacion        = extractParticipacion(content);
-		String participacionNum     = extractParticipacionNum(participacion);
+//		String participacion        = extractParticipacion(content);
+//		String participacionNum     = extractParticipacionNum(participacion);
 
 		String unidad               = Commons.extract(content, "unidad", "(", "PRIMERA");
 		if(unidad.length() > 40)
@@ -47,9 +48,9 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 		
 		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);
 
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		if(contraprestacionNum.length() == 0)
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		if(montoInversionNum.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
 		String vigencia             = extractVigencia(content);
@@ -60,7 +61,62 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 		String entregaNum           = Commons.extraerFechaAPartirDeTexto(Commons.toSingleLine(entrega));
 	    if(entregaNum == null || entregaNum.length() == 0)
 			revisionManual = revisionManual + "Fecha Entrega.";
+	    
+	    boolean cartaGarantia        = content.indexOf("Referencia: Rendimiento") > 0;
 
+	    String periodoPago         = "";
+	    String inicioComputo       = "";
+	    String rendimiento         = "";
+	    String fechaComienzoPago   = "";
+	    String garantiaRecompra    = "";
+	    
+	    if(cartaGarantia) {
+	    	periodoPago  = Commons.extract(content, "durante", "contados", "Referencia: Rendimiento");
+	    	
+	    	inicioComputo = Commons.toSingleLine(Commons.extract(content, "partir", ",", "Referencia: Rendimiento").replaceAll("partir", ""));
+	    	if(inicioComputo.indexOf("el pago") > 0)
+	    		inicioComputo = inicioComputo.substring(0, inicioComputo.indexOf("el pago"));
+
+	    	if(inicioComputo.indexOf(".") > 0)
+	    		inicioComputo = inicioComputo.substring(0, inicioComputo.indexOf("."));
+
+	    	if(inicioComputo.indexOf("presente") > 0) {
+	    		String fechaContrato = this.fechaContrato(content);
+	    		int ano = Integer.parseInt( fechaContrato.substring(fechaContrato.length()- 4));
+
+		    	inicioComputo = Commons.extraerFechaAPartirDeTexto(inicioComputo, ano);
+	    	}
+	    	else inicioComputo = Commons.convertirFecha(inicioComputo);
+	    		
+	    	
+	    	rendimiento  = Commons.extract(content, "correspondiente", ")", "Referencia: Rendimiento");
+	    	rendimiento  = Commons.numericValue(rendimiento) + "%";
+	    	
+	    	fechaComienzoPago  = Commons.toSingleLine(Commons.extract(content, "mencionada", ".", "Referencia: Rendimiento"));
+	    	fechaComienzoPago  = fechaComienzoPago.substring(fechaComienzoPago.indexOf("del"), fechaComienzoPago.length());
+	    	
+	    	if(fechaComienzoPago.indexOf(",") > 0)
+	    		fechaComienzoPago = fechaComienzoPago.substring(0, fechaComienzoPago.indexOf(","));
+	    	
+	    	if(fechaComienzoPago.indexOf("En") > 0)
+	    		fechaComienzoPago = fechaComienzoPago.substring(0, fechaComienzoPago.indexOf("En"));
+
+	    	if(fechaComienzoPago.indexOf("Una") > 0)
+	    		fechaComienzoPago = fechaComienzoPago.substring(0, fechaComienzoPago.indexOf("Una"));
+
+
+	    	if(fechaComienzoPago.indexOf("presente") > 0) {
+	    		String fechaContrato = this.fechaContrato(content);
+	    		int ano = Integer.parseInt( fechaContrato.substring(fechaContrato.length()- 4));
+
+	    		fechaComienzoPago = Commons.extraerFechaAPartirDeTexto(fechaComienzoPago, ano);
+	    	}
+	    	else fechaComienzoPago = Commons.convertirFecha(fechaComienzoPago);
+
+	    	
+	    	garantiaRecompra  = Commons.extract(content, "se compromete", ".", "Referencia: Rendimiento");
+	    }
+	    
 		csvWriter.write("|");
 
 		csvWriter.write(
@@ -68,183 +124,35 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 						revisionManual, 
 
 						Commons.toSingleLine(tipoDeContrato),
-						Commons.toSingleLine(porcentaje),
+
+//						Commons.toSingleLine(porcentaje),
 						Commons.toSingleLine(porcentajeNum),
 
-						Commons.toSingleLine(participacion),
-						Commons.toSingleLine(participacionNum),
+//						Commons.toSingleLine(participacion),
+//						Commons.toSingleLine(participacionNum),
 						
-						Commons.toSingleLine(unidad),
+//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadAbrev),
 						
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 
 						Commons.toSingleLine(vigencia),
 
-						Commons.toSingleLine(entrega),
-						Commons.toSingleLine(entregaNum)));
-
-	}
-
-	/*
-	public static void main(String[] args) {
-		String folderPath = getFolderPath();
-
-		String[] rutas = Commons.readLines(folderPath + "_links");
-
-		String csvOutputPath = folderPath + "/output.csv";
-
-		int i = 0;
-
-		// Crear el archivo CSV de salida
-		try (BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvOutputPath))) {        	
-			// Escribir encabezados en el archivo CSV
-			csvWriter.write("Tipo Contrato|Nombre Proyecto|Nombre del archivo|Link a archivo|Revision Manual|Tags|ENAJENANTE|ADQUIRENTE|Clave Unica|CURP|Clave RFC|RFC|Nacionalidad|Estado Civil|Mail 1|Mail 2|Mail 3|Tipo de contrato|Porcentaje|Porcentaje Num|Participacion|Participacion Num|Unidad|Unidad Abrev|Contraprestacion|Contraprestacion Num|Vigencia|Entrega|Entrega Num|Beneficiario|Fecha Contrato|Fecha Numerica\n");
-
-			File[] txtFiles =  Commons.getFiles(folderPath);
-
-			for (File txtFile : txtFiles) {
-				System.out.println("processing: " + txtFile.getName());
-
-				String ruta               = rutas[i];
-				i++;
-
-				String content = Files.readString(txtFile.toPath());
-				
-				String promitenteAdquirente = Commons.extractPromitenteAdquiriente(content);
-				String promitenteEnajenante = Commons.extractPromitenteEnajenante(content);
-
-				if(promitenteAdquirente.length() == 0) {
-					csvWriter.write(String.join("|",
-							Commons.toSingleLine(getTipoContrato()),
-							Commons.toSingleLine(getProyecto()),
-							Commons.toSingleLine(txtFile.getName().replaceAll(".txt", ".pdf")),
-							ruta,
-							"No legible OCR" + "\n"));
-
-					continue;
-				}
-				String tags                 = Commons.tags(content);
-				String revisionManual       = "";
-				
-				String CURP                 = Commons.getCURP(content);
-				String CURPLimpio           = Commons.getCURPLimpio(CURP);
-				
-				if(CURP.length() == 0 )
-					revisionManual = revisionManual + "CURP.";
-				else {
-					if(CURPLimpio.length() != 18)
-						revisionManual = revisionManual + "CURP Invalido.";
-				}
-
-				String RFC                  = Commons.getRFC(content, "inscrito");
-				String RFCLimpio            = Commons.getRFCLimpio(RFC);
-				
-				if(RFC.length() == 0 )
-					revisionManual = revisionManual + "RFC.";
-				else {
-					if(RFCLimpio.length() != 13 && RFCLimpio.length() != 12)
-						revisionManual = revisionManual + "RFC Invalido.";					
-				}
-
-				
-				String tipoDeContrato       = tipoDeContrato(content);
-				if(tipoDeContrato.length() == 0)
-					revisionManual = "Tipo Contrato.";
-				
-				String porcentaje           = extractPorcentaje(content);
-				String porcentajeNum        = extractPorcentajeNum(porcentaje);
-				if(porcentajeNum.length() == 0)
-					revisionManual = revisionManual + "Porcentaje.";
-
-				String participacion        = extractParticipacion(content);
-				String participacionNum     = extractParticipacionNum(participacion);
-
-				String unidad               = Commons.extract(content, "unidad", "(", "PRIMERA");
-				if(unidad.length() > 40)
-					unidad = ParserSmartDepasCompraVentaCompleto.extractUnidad(content);
-				
-				String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);
-
-				String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-				String contraprestacionNum  = Commons.numericValue(contraprestacion);
-				if(contraprestacionNum.length() == 0)
-					revisionManual = revisionManual + "Contraprestacion.";
-
-				String vigencia             = extractVigencia(content);
-				if(vigencia.length() == 0)
-					revisionManual = revisionManual + "Vigencia.";
-				
-				String entrega              = extractEntrega(content);
-				String entregaNum           = Commons.extraerFechaAPartirDeTexto(Commons.toSingleLine(entrega));
-			    if(entregaNum == null || entregaNum.length() == 0)
-					revisionManual = revisionManual + "Fecha Entrega.";
-				
-				String beneficiario       = Commons.extract(content, " a ", "llevando", ". BENEFICIARIO");
-				if(beneficiario.length() > 0)
-					beneficiario = beneficiario.substring(2, beneficiario.length());
-				
-				if(beneficiario.indexOf(",") > 0)
-					beneficiario = beneficiario.substring(0, beneficiario.indexOf(","));
-
-				String fechaContrato        = extractFechaContrato(content);
-				String fechaContratoNum     = Commons.convertirFecha(fechaContrato);
-
-				// Escribir una fila en el archivo CSV
-				csvWriter.write(String.join("|",
-						Commons.toSingleLine(getTipoContrato()),
-						Commons.toSingleLine(getProyecto()),
-						Commons.toSingleLine(txtFile.getName().replaceAll(".txt", ".pdf")),
-						Commons.toSingleLine(ruta),
-						revisionManual,
-						tags,
-						
-						Commons.toSingleLine(promitenteEnajenante),
-						Commons.toSingleLine(promitenteAdquirente),
-						
-						Commons.toSingleLine(CURP),
-						Commons.toSingleLine(CURPLimpio),
-						Commons.toSingleLine(RFC),
-						Commons.toSingleLine(RFCLimpio),
-
-						Commons.toSingleLine(Commons.extraerNacionalidad(content)),
-						Commons.toSingleLine(Commons.extraerEstadoCivil(content)),
-						Commons.toSingleLine(Commons.extraerCorreosUnicos(content)),
-
-						Commons.toSingleLine(tipoDeContrato),
-						Commons.toSingleLine(porcentaje),
-						Commons.toSingleLine(porcentajeNum),
-
-						Commons.toSingleLine(participacion),
-						Commons.toSingleLine(participacionNum),
-						
-						Commons.toSingleLine(unidad),
-						Commons.toSingleLine(unidadAbrev),
-						
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
-
-						Commons.toSingleLine(vigencia),
-
-						Commons.toSingleLine(entrega),
+//						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(entregaNum),
-						Commons.toSingleLine(beneficiario),
 						
-						Commons.toSingleLine(fechaContrato),
-						Commons.toSingleLine(fechaContratoNum)
+						Commons.toSingleLine(cartaGarantia ? "SI" : "NO"),
+						
+						Commons.toSingleLine(periodoPago),
+						Commons.toSingleLine(inicioComputo),
+						Commons.toSingleLine(rendimiento),
+						Commons.toSingleLine(fechaComienzoPago),
+						Commons.toSingleLine(garantiaRecompra)
+						
+						));
 
-						) + "\n");
-				csvWriter.flush();
-			}
-
-			System.out.println("Archivo CSV generado en: " + csvOutputPath);
-
-		} catch (IOException e) {
-			System.err.println("Ocurrió un error al procesar los archivos: " + e.getMessage());
-		}
 	}
-	*/
 
 	public static String extractUnidad(String texto) {
 		try {
@@ -325,36 +233,6 @@ public class SmartDepasCompraVentaFractional extends BaseParser{
 			int index2 = content.indexOf("(");
 			
 			return content.substring(index + 3, index2);
-			
-		}
-		catch(Exception e) {
-
-		}
-
-		return "";
-	}
-
-	public static String extractPorcentajeNum(String content) {
-		try {
-			int index = content.indexOf("al ");
-			int index2 = content.indexOf("(");
-			
-			return content.substring(index + 3, index2);
-			
-		}
-		catch(Exception e) {
-
-		}
-
-		return "";
-	}
-
-	public static String extractPorcentaje(String content) {
-		try {
-			int index = content.indexOf("correspondientes al", content.indexOf("PRIMERO. "));
-			int index2 = content.indexOf(") ", content.indexOf(")", index) + 10);
-			
-			return content.substring(index, index2 + 1);
 			
 		}
 		catch(Exception e) {
