@@ -25,7 +25,7 @@ public class BordeauxVillas extends BaseParser {
 	
 	public String getFieldsTitle() {
 //		return "Monto|Monto Num|Moneda|Interes Anual|Fecha fin contrato|Condiciones pago|";
-		return "MONTO INVERSION|MONEDA|TASA_INTERES_ANUAL|PLAZO_MESES|CLAUSULAS|CUOTA_MENSUAL|MONEDA CUOTA";
+		return "MONTO_INVERSION|MONEDA|TASA_INTERES_ANUAL|PLAZO_MESES|CLAUSULAS|CUOTA_MENSUAL|MONEDA_CUOTA";
 	}
 	
 	@Override

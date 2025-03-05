@@ -22,7 +22,7 @@ public class AccionesManagement extends BaseParser {
 	
 	public String getFieldsTitle() {
 //		return "Otorgamiento|Otorgamiento Num|Moneda|Plazo|Plazo Num|Monto|Monto Num|Rendimiento|Rendimiento Num|Participacion|Accion";
-		return "MONTO_INVERSION|MONEDA|PLAZO MESES|CAPITAL_INTERESES|RENDIMIENTO|RENDIMIENTO_NUMERO|CLAUSULAS";
+		return "MONTO_INVERSION|MONEDA|PLAZO_MESES|CAPITAL_INTERESES|RENDIMIENTO|RENDIMIENTO_NUMERO|CLAUSULAS";
 	}
 
 	public String getBeneficiario(String content) {

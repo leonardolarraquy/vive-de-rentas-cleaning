@@ -24,7 +24,7 @@ public class HoolBam05PromesaGarantiaMutuoInteres extends BaseParser{
 
 	public String getFieldsTitle() {
 //		return "Contraprestacion|Contraprestacion Num|Moneda|Participacion|Participacion Num|Compromete a Pagar|Compromete a Pagar Num|Concepto Interes|Tasa|Tasa num|Monto interes anual|Monto interes anual num|Cuota Mensual|Cuota Mensual Num|Carta Garantia|Opciones|Mensualidad para ejercer derecho de salida|Mensualidad para ejercer derecho de salida Num|Oferta|Prorroga pago derecho de salida|Participacion|Participacion Num|Opciones para formalizar contrato final|Vigencia|Equity Instantaneo";
-		return "MONTO INVERSION|MONEDA|PORC_PROPIEDAD|TASA_DE_INTERES_ANUAL|CUOTA_MENSUAL|CARTA_GARANTIA|OPCIONES_DE_SALIDA|MENSUALIDAD PARA EJERCER DERECHO DE SALIDA|MENSUALIDAD PARA EJERCER DERECHO DE SALIDA NUM|OFERTA|PRORROGA PAGO DERECHO DE SALIDA|PARTICIPACION|PARTICIPACION NUM|OPCIONES PARA FORMALIZAR CONTRATO FINAL|VIGENCIA|EQUITY INSTANTANEO";
+		return "MONTO_INVERSION|MONEDA|PORC_PROPIEDAD|TASA_DE_INTERES_ANUAL|CUOTA_MENSUAL|CARTA_GARANTIA|OPCIONES_DE_SALIDA|OBLIGACIONES_ENAJENANTE|VIGENCIA_DE_CONTRATO|EQUITY_INSTANTANEO|PLAZO_DEVOLUCION_CAPITAL_E_INTERESES";
 	}
 
 	public static void main(String[] args) {
@@ -56,18 +56,18 @@ public class HoolBam05PromesaGarantiaMutuoInteres extends BaseParser{
 		String cartaGarantia        = Commons.extract(content, "Adicionalmente, mediante", "anexa", "SEGUNDA");
 		cartaGarantia = (cartaGarantia.length() > 0) ? "SI" : "NO";
 		
-		String opcionesSalida       = Commons.toSingleLine(Commons.extract(content, "TERCERA: ","concluir")).replaceAll("\"", "'");
-		String mensualidadSalida    = Commons.toSingleLine(Commons.extract(content, "posteriores a", ")", "En virtud").replaceAll("posteriores a", "")).replaceAll("\"", "'")  + ")";
-		
-		String oferta               = Commons.extract(content, "realizada" , ",", "TERCERA");
-		String prorroga             = Commons.extract(content, "dentro de un plazo", "." , "TERCERA");
-		String participacion2       = Commons.extract(content, "equivalente a", "del bien" , "TERCERA");
+		String opcionesSalida       = Commons.toSingleLine(Commons.extract(content, "TERCERA: ","descrita")).replaceAll("\"", "'");
+		String mensualidadSalida    = Commons.toSingleLine(Commons.extract(content, "En virtud", "simple", "TERCERA")).replaceAll("\"", "'");
+		String oferta               = Commons.toSingleLine(Commons.extract(content, "realizada" , ",", "TERCERA"));
+		String prorroga             = Commons.toSingleLine(Commons.extract(content, "dentro de un plazo", "." , "TERCERA"));
 		
 		String opcionesFormalizar   = Commons.extract(content, "constitución de la", "en " , "CUARTA");
 		
 		String vigencia             = Commons.extract(content, "vigente", "," , "SÉPTIMA");
 
 		String equity               = Commons.extract(content, "equity instantáneo", "del " , "JURISDICCIÓN");
+		
+		String plazoCapitalEInt     = Commons.extract(content, "plazo que no", ",");
 
 		csvWriter.write("|");
 
@@ -98,17 +98,15 @@ public class HoolBam05PromesaGarantiaMutuoInteres extends BaseParser{
 						
 						Commons.toSingleLine(cartaGarantia),
 
-						'"' + opcionesSalida + " .\n" + mensualidadSalida + '"',
-
-						Commons.toSingleLine(oferta),
-						
-						Commons.toSingleLine(prorroga),
-						
-						Commons.toSingleLine(participacion2),
-						Commons.toSingleLine(Commons.numericValue(participacion2) + "%"),
+						'"' + opcionesSalida + " .\n" + mensualidadSalida + " .\n" + oferta + " .\n" + prorroga + '"',
+																		
 						Commons.toSingleLine(opcionesFormalizar),
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(equity)));
+						Commons.toSingleLine(equity),
+
+						Commons.toSingleLine(plazoCapitalEInt)
+						
+						));
 						
 	}
 

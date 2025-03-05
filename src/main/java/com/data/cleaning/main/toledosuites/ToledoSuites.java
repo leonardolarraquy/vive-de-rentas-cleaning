@@ -22,7 +22,7 @@ public class ToledoSuites extends BaseParser {
 
 	public String getFieldsTitle() {
 //		return "Ubicacion|Derechos|Emision|Contraprestacion|Contraprestacion Num|Moneda|Devolucion|Porcentaje";
-		return "UBICACION_PROPIEDAD|PROC_PROPIEDAD|VIGENCIA_DE_CONTRATO|MONTO_INVERSION|MONEDA|DEVOLUCION_POR_TERMINACION_DE_CONTRATO";
+		return "UBICACION_PROPIEDAD|PORC_PROPIEDAD|VIGENCIA_DE_CONTRATO|MONTO_INVERSION|MONEDA|DEVOLUCION_POR_TERMINACION_DE_CONTRATO";
 	}
 
 	public static void main(String[] args) {

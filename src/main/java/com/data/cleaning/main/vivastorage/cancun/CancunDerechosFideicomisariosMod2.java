@@ -21,7 +21,8 @@ public class CancunDerechosFideicomisariosMod2 extends BaseParser{
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Obligaciones del Enajenante|Vigencia|Emision Derechos|Emision Derechos Num|Prorroga|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos";
+//		return "Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Obligaciones del Enajenante|Vigencia|Emision Derechos|Emision Derechos Num|Prorroga|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos";
+		return "UBICACION_PROPIEDAD|M2_MINIBODEGAS|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|OBLIGACIONES_ENAJENANTE|VIGENCIA_DEL_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA|NR_MENSUALIDADES|TASA_DE_INTERES_ANUAL|FECHA_COMIENZO_RENDIMIENTOS|RENDIMIENTO_GARANTIZADO";
 	}
 
 	public static void main(String[] args) {
@@ -34,10 +35,10 @@ public class CancunDerechosFideicomisariosMod2 extends BaseParser{
 		if(ubicacion.length() == 0)
 			revisionManual = revisionManual + "Ubicacion.";					
 
-		String propiedad            = Commons.extract(content, "correspondientes", "ubicada", "PRIMERA");
+		String m2                   = Commons.numericValue(Commons.extract(content, "correspondientes", "ubicada", "PRIMERA"));
 		
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		String moneda               = Commons.extractMoneda(montoInversion);
 		
 		String apartado             = Commons.extract(content, "cantidad", "(", "entregó");
 		String liquidacion          = Commons.extract(content, "cantidad", "(", "pagar");
@@ -51,18 +52,27 @@ public class CancunDerechosFideicomisariosMod2 extends BaseParser{
 
 		String prorroga             = Commons.extract(content, "prorrogarse", "en", "DERECHOS");
 				
-		String plazoRendimiento     = Commons.extract(content, "durante", "contados", "Al respecto");
+		String nrMensualidades      = Commons.extract(content, "durante", "contados", "Al respecto");
+		if(nrMensualidades.length() > 0)
+			nrMensualidades = Commons.numericValue(nrMensualidades);
 		
 		String rentabilidadAnual    = Commons.extract(content, "correspondiente", ",", "Al respecto");
 		if(rentabilidadAnual.indexOf(",") > 0)
 			rentabilidadAnual = rentabilidadAnual.substring(0, rentabilidadAnual.indexOf(","));
 		
-		String aPartir              = Commons.extract(content, "partir", ".", "Al respecto");
+		if(rentabilidadAnual.length() > 0)
+			rentabilidadAnual = Commons.extractParteDecimal(rentabilidadAnual) + "%";
+		
+		String aPartir              = Commons.extract(content, "partir", ".", "Al respecto").replaceAll("partir", "");
 		if(aPartir.indexOf(",") > 0)
 			aPartir = aPartir.substring(0, aPartir.indexOf(","));
 
 		if(aPartir.indexOf("el pago") > 0)
 			aPartir = aPartir.substring(0, aPartir.indexOf("el pago"));
+		
+		aPartir = Commons.convertirFecha(aPartir);
+
+    	boolean rendimientoGarantizado = content.indexOf("rendimiento garantizado") > 0;
 
 		csvWriter.write("|");
 
@@ -72,28 +82,33 @@ public class CancunDerechosFideicomisariosMod2 extends BaseParser{
 
 						Commons.toSingleLine(ubicacion),
 						
-						Commons.toSingleLine(propiedad),
+						Commons.toSingleLine(m2),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(Commons.numericValue(contraprestacion)),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(Commons.numericValue(montoInversion)),
 						Commons.toSingleLine(moneda),
 						
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(Commons.numericValue(apartado)),
-						Commons.toSingleLine(liquidacion),
+
+//						Commons.toSingleLine(liquidacion),
 						Commons.toSingleLine(Commons.numericValue(liquidacion)),
 						
 						Commons.toSingleLine(obligaciones),
 						Commons.toSingleLine(vigencia),
 
-						Commons.toSingleLine(emisionDerechos),
+//						Commons.toSingleLine(emisionDerechos),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(emisionDerechos)),
 
 						Commons.toSingleLine(prorroga),
 
-						Commons.toSingleLine(plazoRendimiento),
+						Commons.toSingleLine(nrMensualidades),
 						Commons.toSingleLine(rentabilidadAnual),
-						Commons.toSingleLine(aPartir)));
+						Commons.toSingleLine(aPartir),
+						
+						Commons.toSingleLine(rendimientoGarantizado ? "SI" : "NO")
+
+						));
 
 	}
 

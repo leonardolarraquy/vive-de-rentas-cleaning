@@ -24,7 +24,7 @@ public class HoolBam03Financiado extends BaseParser {
 
 	public String getFieldsTitle() {
 //		return "% Fraccion|% Fraccion Num|Participacion|Participacion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Enganche|Enganche Num|Primer Pago|Primer Pago Num|Nr de Mensualidades|Nr de Mensualidades Num|Monto Cuota|Monto Cuota Num|Valor a Cubrir|Valor a Cubrir Num|Valor restante|Valor restante Num|Forma de Pago|Financiamiento|Opcion de compra|Constitucion|Devolucion|Vigencia|Operacion|Plazo Meses";
-		return "PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_RESTO_ENGANCHE|FECHA_1ER_PAGO|NR_MENSUALIDADES|CUOTA_MENSUAL|MONTO_A_FINANCIAR_PARCIALIDADES|BALLOON_PAYMENT|OPCIONES PAGO BALOON PAYMENT|CONSTITUCION|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|ENTREGA|PRORROGA_DE_ENTREGA";
+		return "PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_RESTO_ENGANCHE|FECHA_1ER_PAGO|NR_MENSUALIDADES|CUOTA_MENSUAL|MONTO_A_FINANCIAR_PARCIALIDADES|BALLOON_PAYMENT|OPCIONES_PAGO_BALOON_PAYMENT|CONSTITUCION|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {

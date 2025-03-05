@@ -22,7 +22,7 @@ public class FondoTierra extends BaseParser {
 	
 	public String getFieldsTitle() {
 //		return "Otorgamiento|Otorgamiento Num|Moneda|Plazo|Plazo Num|Interes|Interes Num|Clausula I|Clausula II|";
-		return "MONTO INVERSION|MONEDA|PLAZO_MESES|TASA_DE_INTERES_ANUAL|CLAUSULAS|";
+		return "MONTO_INVERSION|MONEDA|PLAZO_MESES|TASA_DE_INTERES_ANUAL|CLAUSULAS|";
 	}
 	
 	@Override

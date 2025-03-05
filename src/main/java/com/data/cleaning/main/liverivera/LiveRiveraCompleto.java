@@ -22,7 +22,7 @@ public class LiveRiveraCompleto extends BaseParser {
 	
 	public String getFieldsTitle() {
 //		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga|Unidad Anexo";
-		return "UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|VIGENCIA_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
+		return "UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|VIGENCIA_DE_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {

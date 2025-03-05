@@ -22,7 +22,7 @@ public class MeridaMontejo extends BaseParser {
 
 	public String getFieldsTitle() {
 //		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Terminacion|Vigencia|Unidad Inmobiliaria";
-		return "UBICACION_PROPIEDAD|FECHA_DE_ENTREGA|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION DE_CONTRATO|VIGENCIA_CONTRATO|UNIDAD";
+		return "UBICACION_PROPIEDAD|FECHA_DE_ENTREGA|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|UNIDAD";
 	}
 
 	public static void main(String[] args) {

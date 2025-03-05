@@ -22,7 +22,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 	public String getFieldsTitle() {
 //		return "Objeto|Contraprestacion|Contraprestacion Num|Moneda|Clausulas|Vigencia|Entrega|Entrega Num|Prorroga|Unidad|Unidad Abreviada|Forma de Pago";
-		return "OBJETO_DEL_CONTRATO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ADQUIRIENTE|VIGENCIA_CONTRATO|FECHA_ENTREGA|PRORROGA_DE_ENTREGA|UNIDAD|FORMA_DE_PAGO";
+		return "OBJETO_DEL_CONTRATO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ADQUIRIENTE|VIGENCIA_DE_CONTRATO|FECHA_ENTREGA|PRORROGA_DE_ENTREGA|UNIDAD|FORMA_DE_PAGO";
 	}
 
 	public static void main(String[] args) {

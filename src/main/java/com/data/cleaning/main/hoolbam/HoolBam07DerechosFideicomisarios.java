@@ -22,7 +22,7 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 
 	public String getFieldsTitle() {
 //		return "Torre|Participacion|Participacion Num|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Monto Liquidacion|Monto Liquidacion Num|Constitucion|Vigencia|Prorroga|Entrega|Fecha Entrega Num";
-		return "TORRE|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|OBLIGACIONES_ENAJENANTE|VIGENCIA_CONTRATO|PRORROGA_DE_ENTREGA|FECHA_ENTREGA";
+		return "TORRE|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|OBLIGACIONES_ENAJENANTE|VIGENCIA_DE_CONTRATO|PRORROGA_DE_ENTREGA|FECHA_ENTREGA";
 	}
 
 	public static void main(String[] args) {

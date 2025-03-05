@@ -21,7 +21,8 @@ public class TorreMonterrey extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Credencial para votar|Constitucion|Contraprestacion|Contraprestacion Num|Moneda|Entrega|Entrega Num";
+//		return "Ubicacion|Credencial para votar|Constitucion|Contraprestacion|Contraprestacion Num|Moneda|Entrega|Entrega Num";
+		return "UBICACION_PROPIEDAD|OBLIGACIONES_ENAJENANTE|MONTO_INVERSION|MONEDA|FECHA_DE_ENTREGA|CAJON_ESTACIONAMIENTO";
 	}
 
 	public static void main(String[] args) {
@@ -34,20 +35,28 @@ public class TorreMonterrey extends BaseParser {
 		if(ubicacion.length() == 0)
 			revisionManual = revisionManual + "Ubicacion.";
 
-		String credencial           = Commons.extract(content, "No", ".", "Credencial");
+//		String credencial           = Commons.extract(content, "No", ".", "Credencial");
 
 		String constitucion         = Commons.extract(content, "constitu", ",", "CUARTA");
 
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "QUINTA");
-		if(contraprestacion.length() == 0)
+		String montoInversion       = Commons.extract(content, "la cantidad", "(", "En virtud de");
+		if(montoInversion.length() == 0)
+			montoInversion       = Commons.extract(content, "la cantidad", "(", "QUINTA");
+		
+		if(montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String fechaDeEntrega       = Commons.extract(content, "realizar", ".", "La entrega");
 		if(fechaDeEntrega.length() == 0)
-			revisionManual = revisionManual + "Fecha Entrega.";					
+			revisionManual = revisionManual + "Fecha Entrega.";		
+		
+		String cajon               = Commons.extract(content, "estacionamiento", ".");
+		if(cajon.length() > 0)
+			 cajon = "SI";
+		else cajon = "NO";
 
 		csvWriter.write("|");
 
@@ -57,15 +66,18 @@ public class TorreMonterrey extends BaseParser {
 
 						Commons.toSingleLine(ubicacion),
 
-						Commons.toSingleLine(credencial),
+//						Commons.toSingleLine(credencial),
 						Commons.toSingleLine(constitucion),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(fechaDeEntrega),
-						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(fechaDeEntrega))));
+//						Commons.toSingleLine(fechaDeEntrega),
+						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(fechaDeEntrega)),
+						Commons.toSingleLine(cajon)
+						
+						));
 				
 	}
 }

@@ -21,7 +21,8 @@ public class CancunDerechosFideicomisarios extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Terminacion|Vigencia|Prorroga|Entrega|Fecha Entrega Num|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos";
+//		return "Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Terminacion|Vigencia|Prorroga|Entrega|Fecha Entrega Num|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos";
+		return "UBICACION_PROPIEDAD|M2_MINIBODEGAS|MONTO_INVERSION|MONEDA|APARTADO|LIQUIDACION|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|PRORROGA_DE_ENTREGA|FECHA_DE_ENTREGA|NR_MENSUALIDADES|TASA_DE_INTERES_ANUAL|FECHA_COMIENZO_RENDIMIENTOS|RENDIMIENTO_GARANTIZADO";
 	}
 
 	public static void main(String[] args) {
@@ -35,11 +36,14 @@ public class CancunDerechosFideicomisarios extends BaseParser {
 			revisionManual = revisionManual + "Ubicacion.";					
 
 
-		String propiedad            = Commons.extract(content, "correspondientes", "ubicada", "SEGUNDO");
+		String m2                   = Commons.numericValue(Commons.extract(content, "correspondientes", "ubicada", "SEGUNDO"));
 
-		String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
+		
+		String apartado             = Commons.extract(content, "cantidad de", "(", "entrego");
+		String liquidacion          = Commons.extract(content, "se obliga a pagar", "(", "SEGUNDA");
 
 		String terminacion          = Commons.extract(content, "En caso", ".", "CUARTA");
 		String vigencia             = Commons.extract(content, "estar", " a ", "SEXTA");
@@ -48,21 +52,39 @@ public class CancunDerechosFideicomisarios extends BaseParser {
 		if(fechaDeEntrega.length() == 0)
 			revisionManual = revisionManual + "Fecha Entrega.";					
 
-		String plazo                = Commons.extract(content, "prorrogarse", "en", "ENTREGA DE");
+		String prorroga             = Commons.extract(content, "prorrogarse", "en", "ENTREGA DE");
 
-		String plazoRendimiento     = Commons.extract(content, "durante", "el pago", "Al respecto");
+		String plazoRendimiento     = Commons.extract(content, "durante", "contados", "Al respecto");
+		if(plazoRendimiento.length() == 0)
+			revisionManual = revisionManual + "NR Mensualidades.";
+		else {
+			
+			if(plazoRendimiento.indexOf("años") > 0)
+				 plazoRendimiento = "" + Integer.parseInt(Commons.numericValue(plazoRendimiento)) * 12;
+			else plazoRendimiento = Commons.numericValue(plazoRendimiento);
+		}
 
-		String rentabilidadAnual    = Commons.extract(content, "correspondiente", ";", "Al respecto");
-		if(rentabilidadAnual.indexOf(",") > 0)
-			rentabilidadAnual = rentabilidadAnual.substring(0, rentabilidadAnual.indexOf(","));
-
-		String aPartir              = Commons.extract(content, "partir", ".", "Al respecto");
+		String rentabilidadAnual    = Commons.extract(content, "correspondiente", "rentabilidad", "Al respecto");
+		if(rentabilidadAnual.length() > 0)
+			rentabilidadAnual = Commons.extractParteDecimal(rentabilidadAnual) + "%";
+					
+		String aPartir              = Commons.extract(content, "partir", ".", "Al respecto").replaceAll("partir", "");
 		if(aPartir.indexOf(",") > 0)
 			aPartir = aPartir.substring(0, aPartir.indexOf(","));
 
 		if(aPartir.indexOf("el pago") > 0)
 			aPartir = aPartir.substring(0, aPartir.indexOf("el pago"));
 
+    	if(aPartir.indexOf("presente") > 0) {
+    		String fechaContrato = this.fechaContrato(content);
+    		int ano = Integer.parseInt( fechaContrato.substring(fechaContrato.length()- 4));
+
+    		aPartir = Commons.extraerFechaAPartirDeTexto(aPartir, ano);
+    	}
+    	else aPartir = Commons.convertirFecha(aPartir);
+
+    	boolean rendimientoGarantizado = content.indexOf("rendimiento garantizado") > 0;
+		
 		csvWriter.write("|");
 
 		csvWriter.write(
@@ -71,201 +93,30 @@ public class CancunDerechosFideicomisarios extends BaseParser {
 
 						Commons.toSingleLine(ubicacion),
 
-						Commons.toSingleLine(propiedad),
+						Commons.toSingleLine(m2),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
+						Commons.toSingleLine(Commons.numericValue(apartado)),
+						Commons.toSingleLine(Commons.numericValue(liquidacion)),
 
 						Commons.toSingleLine(terminacion),
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(plazo),
+						Commons.toSingleLine(prorroga),
 
-						Commons.toSingleLine(fechaDeEntrega),
+//						Commons.toSingleLine(fechaDeEntrega),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(fechaDeEntrega)),
 
 						Commons.toSingleLine(plazoRendimiento),
 						Commons.toSingleLine(rentabilidadAnual),
-						Commons.toSingleLine(aPartir)));
+						Commons.toSingleLine(aPartir),
+						
+						Commons.toSingleLine(rendimientoGarantizado ? "SI" : "NO")
+						
+						));
 
 	}
-
-	/*
-	public static void main(String[] args) {
-		String folderPath = getFolderPath();
-
-		String[] rutas = Commons.readLines(folderPath + "_links");
-
-		String csvOutputPath = folderPath + "/output.csv";
-
-		int i = 0;
-
-		// Crear el archivo CSV de salida
-		try (BufferedWriter csvWriter = new BufferedWriter(new FileWriter(csvOutputPath))) {        	
-			// Escribir encabezados en el archivo CSV
-			csvWriter.write("Tipo Contrato|Nombre Proyecto|Nombre del archivo|Link a archivo|Revision Manual|Tags|ENAJENANTE|ADQUIRENTE|Clave Unica|CURP|Clave RFC|RFC|Nacionalidad|Estado Civil|Mail 1|Mail 2|Mail 3|Ubicacion|Propiedad|Contraprestacion|Contraprestacion Num|Moneda|Terminacion|Vigencia|Prorroga|Direccion Adquirente|Beneficiario|Fecha Contrato|Fecha Contrato Num|Entrega|Fecha Entrega Num|Plazo Rendimiento Garantizado|Rentabilidad Anual|Fecha a partir que recibe rendimientos\n");
-
-			// Obtener todos los archivos .txt en la carpeta
-			File[] txtFiles =  Commons.getFiles(folderPath);
-
-			for (File txtFile : txtFiles) {
-				System.out.println("processing: " + txtFile.getName());
-
-				String ruta               = rutas[i];
-				i++;
-
-				String content = Files.readString(txtFile.toPath());
-
-				String promitenteAdquirente = Commons.extractPromitenteAdquiriente(content);
-				String promitenteEnajenante = Commons.extractPromitenteEnajenante(content);
-
-				if(promitenteAdquirente.length() == 0) {
-					csvWriter.write(String.join("|",
-							Commons.toSingleLine(getTipoContrato()),
-							Commons.toSingleLine(getProyecto()),
-							Commons.toSingleLine(txtFile.getName().replaceAll(".txt", ".pdf")),
-							ruta,
-							"No legible OCR" + "\n"));
-
-					continue;
-				}
-
-				String tags                 = Commons.tags(content);
-
-				String revisionManual = "";
-
-				String ubicacion            = Commons.extract(content, "ubicado", "(", "SEGUNDO").replaceAll("ubicado en", "");
-				if(ubicacion.length() == 0)
-					revisionManual = revisionManual + "Ubicacion.";					
-
-				String CURP                 = Commons.getCURP(content);
-				String CURPLimpio           = Commons.getCURPLimpio(CURP);
-
-				if(CURP.length() == 0 )
-					revisionManual = revisionManual + "CURP.";
-				else {
-					if(CURPLimpio.length() != 18)
-						revisionManual = revisionManual + "CURP Invalido.";
-				}
-
-				String RFC                  = Commons.getRFC(content, "inscrito");
-				String RFCLimpio            = Commons.getRFCLimpio(RFC);
-
-				if(RFC.length() == 0 )
-					revisionManual = revisionManual + "RFC.";
-				else {
-					if(RFCLimpio.length() != 13 && RFCLimpio.length() != 12)
-						revisionManual = revisionManual + "RFC Invalido.";					
-				}
-
-				String propiedad            = Commons.extract(content, "correspondientes", "ubicada", "SEGUNDO");
-
-				String contraprestacion     = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
-				String contraprestacionNum  = Commons.numericValue(contraprestacion);
-				String moneda               = Commons.extractMoneda(contraprestacion);
-
-				String terminacion          = Commons.extract(content, "En caso", ".", "CUARTA");
-				String vigencia             = Commons.extract(content, "estar", " a ", "SEXTA");
-
-				String fechaDeEntrega       = Commons.extract(content, "realizar", ".", "La entrega de");
-				if(fechaDeEntrega.length() == 0)
-					revisionManual = revisionManual + "Fecha Entrega.";					
-
-
-				String plazo                = Commons.extract(content, "prorrogarse", "en", "ENTREGA DE");
-
-				String direccionAdquirente  = Commons.extract(content, "ADQUIRENTE", "EL “", "DOMICILIOS");
-				if(direccionAdquirente.length() > 13)
-					direccionAdquirente = direccionAdquirente.substring(13);
-
-				if(direccionAdquirente.indexOf("Cualquiera") > 0)
-					direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("Cualquiera"));	
-
-				if(direccionAdquirente.indexOf("/") > 0)
-					direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("/"));	
-
-
-				String beneficiario         = Commons.extract(content, "transmitido", "llevando" , "DÉCIMA").replaceAll("transmitido a", "");
-
-
-				String fechaContrato        = Commons.extract(content, "de México a los", ".", "LEGISLACIÓN APLICABLE").replaceAll("de México a ", "");
-				if(fechaContrato.length() == 0)
-					fechaContrato = extractFechaContrato(content);
-
-				if(fechaContrato.indexOf(".") > 0)
-					fechaContrato = fechaContrato.substring(0, fechaContrato.indexOf("."));
-
-				String fechaContratoNum     = Commons.convertirFecha(fechaContrato);
-
-				String plazoRendimiento     = Commons.extract(content, "durante", "el pago", "Al respecto");
-
-				String rentabilidadAnual    = Commons.extract(content, "correspondiente", ";", "Al respecto");
-				if(rentabilidadAnual.indexOf(",") > 0)
-					rentabilidadAnual = rentabilidadAnual.substring(0, rentabilidadAnual.indexOf(","));
-
-				String aPartir              = Commons.extract(content, "partir", ".", "Al respecto");
-				if(aPartir.indexOf(",") > 0)
-					aPartir = aPartir.substring(0, aPartir.indexOf(","));
-
-				if(aPartir.indexOf("el pago") > 0)
-					aPartir = aPartir.substring(0, aPartir.indexOf("el pago"));
-
-				// Escribir una fila en el archivo CSV
-				csvWriter.write(String.join("|",
-						Commons.toSingleLine(getTipoContrato()),
-						Commons.toSingleLine(getProyecto()),
-						Commons.toSingleLine(txtFile.getName().replaceAll(".txt", ".pdf")),
-						Commons.toSingleLine(ruta),
-						revisionManual,
-						Commons.toSingleLine(tags),
-
-						Commons.toSingleLine(promitenteEnajenante),
-						Commons.toSingleLine(promitenteAdquirente),
-
-						Commons.toSingleLine(CURP),
-						Commons.toSingleLine(CURPLimpio),
-						Commons.toSingleLine(RFC),
-						Commons.toSingleLine(RFCLimpio),
-
-						Commons.toSingleLine(Commons.extraerNacionalidad(content)),
-						Commons.toSingleLine(Commons.extraerEstadoCivil(content)),
-						Commons.toSingleLine(Commons.extraerCorreosUnicos(content)),
-
-						Commons.toSingleLine(ubicacion),
-
-						Commons.toSingleLine(propiedad),
-
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
-						Commons.toSingleLine(moneda),
-
-						Commons.toSingleLine(terminacion),
-						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(plazo),
-
-						Commons.toSingleLine(direccionAdquirente),
-						Commons.toSingleLine(beneficiario),
-
-						Commons.toSingleLine(fechaContrato),
-						Commons.toSingleLine(fechaContratoNum),
-
-						Commons.toSingleLine(fechaDeEntrega),
-						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(fechaDeEntrega)),
-
-						Commons.toSingleLine(plazoRendimiento),
-						Commons.toSingleLine(rentabilidadAnual),
-						Commons.toSingleLine(aPartir)
-
-						) + "\n");
-			}
-
-			System.out.println("Archivo CSV generado en: " + csvOutputPath);
-
-		} catch (IOException e) {
-			System.err.println("Ocurrió un error al procesar los archivos: " + e.getMessage());
-		}
-	}
-	*/
 
 	public static String extractFechaContrato(String texto) {
 		try {

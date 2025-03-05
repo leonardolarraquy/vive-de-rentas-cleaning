@@ -21,7 +21,8 @@ public class LoftsLaPazCompleto extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga";
+//		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga";
+		return "UNIDAD|TIPO_DE_CONTRATO|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|VIGENCIA_DE_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 	
 	public static void main(String[] args) {
@@ -34,18 +35,19 @@ public class LoftsLaPazCompleto extends BaseParser {
 		if(unidad.indexOf("(") > 0)
 			unidad = unidad.substring(0, unidad.indexOf("(") - 1);
 		
-		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);				
-		if(unidadAbrev.length() == 0)
+		unidad = Commons.toSingleLine(unidad).replaceAll("Unidad Inmobiliaria", "").replaceAll("Unidad inmobiliaria", "");
+		
+//		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);				
+		if(unidad.length() == 0)
 			revisionManual = revisionManual + "Unidad.";
 		
 		String tipoContrato         = Commons.extract(content, "mediante", "sobre", "PRIMERA.");
 		if(tipoContrato.indexOf(".") > 0)
 			tipoContrato = tipoContrato.substring(0, tipoContrato.indexOf("."));
 		
-
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String apartado             = Commons.extract(content, "la cantidad", "por", "de los cuales");
 
@@ -76,22 +78,23 @@ public class LoftsLaPazCompleto extends BaseParser {
 						revisionManual, 
 
 						Commons.toSingleLine(unidad),
-						Commons.toSingleLine(unidadAbrev),
+//						Commons.toSingleLine(unidadAbrev),
 
 						Commons.toSingleLine(tipoContrato),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(contraprestacion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(apartadoNum),
 						
-						Commons.toSingleLine(liquidacion),
+//						Commons.toSingleLine(liquidacion),
 						Commons.toSingleLine(liquidacionNum),
 
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(entrega),
+						
+//						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
 						Commons.toSingleLine(prorroga)));
 	}

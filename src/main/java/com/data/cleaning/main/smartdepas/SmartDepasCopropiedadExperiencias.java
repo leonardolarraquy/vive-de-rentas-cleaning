@@ -24,7 +24,7 @@ public class SmartDepasCopropiedadExperiencias extends BaseParser{
 
 	public String getFieldsTitle() {
 //		return "Unidad|Unidad Abrev|Tipo Contrato|Participacion|Porcentaje Participacion|Monto|Monto Num|Moneda|Vigencia|Redimiento Garantizado|Redimiento Garantizado Num|A partir de|Plazo rendimientos garantizados|Plazo rendimientos garantizados Num|Monto Rendimiento Mensual|Rendimiento Mensual Num|Rendimiento Mensual Moneda|Carta Garantia|Vigilancia Administracion|Equity Instantaneo";
-		return "UNIDAD|TIPO CONTRATO|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|VIGENCIA_CONTRATO|RENDIMIENTO_GARANTIZADO|TASA_DE_INTERES_ANUAL|FECHA_COMIENZO_RENDIMIENTOS|NR_MENSUALIDADES|CUOTA_MENSUAL|RENDIMIENTO_MENSUAL_MONEDA|CARTA_GARANTIA|ADMINISTRADOR_VIGILANTE|EQUITY_INSTANTANEO";
+		return "UNIDAD|TIPO_DE_CONTRATO|PORC_PROPIEDAD|MONTO_INVERSION|MONEDA|VIGENCIA_DE_CONTRATO|RENDIMIENTO_GARANTIZADO|TASA_DE_INTERES_ANUAL|FECHA_COMIENZO_RENDIMIENTOS|NR_MENSUALIDADES|CUOTA_MENSUAL|RENDIMIENTO_MENSUAL_MONEDA|CARTA_GARANTIA|ADMINISTRADOR_VIGILANTE|EQUITY_INSTANTANEO";
 	}
 
 	public static void main(String[] args) {

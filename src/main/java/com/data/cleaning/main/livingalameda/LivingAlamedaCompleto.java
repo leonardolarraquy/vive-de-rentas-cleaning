@@ -21,7 +21,8 @@ public class LivingAlamedaCompleto extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga|Unidad Anexo";
+//		return "Unidad|Unidad Abrev.|Tipo Contrato|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Vigencia|Entrega|Entrega Num|Prorroga|Unidad Anexo";
+		return "UNIDAD|TIPO_DE_CONTRATO|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|VIGENCIA_DE_CONTRATO|FECHA_DE_ENTREGA|PRORROGA_DE_ENTREGA";
 	}
 
 	public static void main(String[] args) {
@@ -30,22 +31,29 @@ public class LivingAlamedaCompleto extends BaseParser {
 	}
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
-		String unidad               = Commons.extract(content, "Unidad", "Incluye", "PRIMERA");
-		if(unidad.indexOf("(") > 0)
-			unidad = unidad.substring(0, unidad.indexOf("(") - 1);
+//		String unidad               = Commons.extract(content, "Unidad", "Incluye", "PRIMERA");
+//		if(unidad.indexOf("(") > 0)
+//			unidad = unidad.substring(0, unidad.indexOf("(") - 1);
 		
-		String unidadAbrev          = Commons.extraerUnidadAbrev(unidad);				
-		if(unidadAbrev.length() == 0)
-			revisionManual = revisionManual + "Unidad.";
+		String unidadAnexo          = Commons.extract(content, "Unidad Inmobiliaria:", "Incluye");
+		if(unidadAnexo.length() == 0)
+			unidadAnexo          = Commons.extract(content, "Unidad Inmobiliaria:", "Caract");
+		
+		unidadAnexo = unidadAnexo.replaceAll("Unidad Inmobiliaria: ", "");				
+		unidadAnexo = unidadAnexo.replaceAll("- ", "");				
+
+//		String unidadAbrev          = Commons.extraerUnidadAbrev(unidadAnexo);				
+//		if(unidadAbrev.length() == 0)
+//			revisionManual = revisionManual + "Unidad.";
 		
 		String tipoContrato         = Commons.extract(content, "mediante", "sobre", "PRIMERA.");
 		if(tipoContrato.indexOf(".") > 0)
 			tipoContrato = tipoContrato.substring(0, tipoContrato.indexOf("."));
 		
 
-		String contraprestacion     = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
-		String contraprestacionNum  = Commons.numericValue(contraprestacion);
-		String moneda               = Commons.extractMoneda(contraprestacion);
+		String montoInversion       = Commons.extract(content, "la cantidad", ")", "SEGUNDA") + ")";
+		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String moneda               = Commons.extractMoneda(montoInversion);
 
 		String apartado             = Commons.extract(content, "comprende", ")", "SEGUNDA");
 		if(apartado.length() > 0)
@@ -75,39 +83,34 @@ public class LivingAlamedaCompleto extends BaseParser {
 		if(beneficiario.length() > 0)
 			beneficiario = beneficiario.substring(2, beneficiario.length());
 		
-		String unidadAnexo          = Commons.extract(content, "Unidad Inmobiliaria:", "Incluye");
-		if(unidadAnexo.length() == 0)
-			unidadAnexo          = Commons.extract(content, "Unidad Inmobiliaria:", "Caract");
-		
-		unidadAnexo = unidadAnexo.replaceAll("Unidad número: ", "");				
-
 		csvWriter.write("|");
 		
 		csvWriter.write(
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(unidad),
-						Commons.toSingleLine(unidadAbrev),
+//						Commons.toSingleLine(unidad),
+						Commons.toSingleLine(unidadAnexo),
 
 						Commons.toSingleLine(tipoContrato),
 
-						Commons.toSingleLine(contraprestacion),
-						Commons.toSingleLine(contraprestacionNum),
+//						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
-						Commons.toSingleLine(apartado),
+//						Commons.toSingleLine(apartado),
 						Commons.toSingleLine(apartadoNum),
 						
-						Commons.toSingleLine(liquidacion),
+//						Commons.toSingleLine(liquidacion),
 						Commons.toSingleLine(liquidacionNum),
 
 						Commons.toSingleLine(vigencia),
-						Commons.toSingleLine(entrega),
-						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
-						Commons.toSingleLine(prorroga),
 						
-						Commons.toSingleLine(unidadAnexo)));
+//						Commons.toSingleLine(entrega),
+						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
+						Commons.toSingleLine(prorroga)
+												
+						));
 
 	}
 }

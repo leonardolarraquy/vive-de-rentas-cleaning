@@ -22,7 +22,7 @@ public class LiveRiveraFractional extends BaseParser {
 
 	public String getFieldsTitle() {
 //		return "Tickets|Tickets Num|% Fraccion|% Fraccion Num|Unidad|Unidad Abrev.|Contraprestacion|Contraprestacion Num|Moneda|Apartado|Apartado Num|Liquidacion|Liquidacion Num|Carta Garantia|Opciones de formalizacion de contrato|Mensualidad en la que toma decision de contrato|Obligaciones Enajenante|Plazo de penalizacion tras entrega|Vigencia|Unidad Anexo|Forma de Pago|Plazo Garantia|Rentabilidad Anual|Rentabilidad Anual Num|Equity";
-		return "NR_TICKETS|PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|CARTA_GARANTIA|OPCIONES_DE_FORMALIZACION_DE_CONTRATO|MENSUALIDAD_AVISO_OPCIONES_SALIDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA|PLAZO_PAGO_RENTABILIDAD|TASA_ANUAL_RENTABILIDAD_GARANTIZADA|EQUITY_INSTANTANEO";
+		return "NR_TICKETS|PORC_PROPIEDAD|UNIDAD|MONTO_INVERSION|MONEDA|MONTO_APARTADO|MONTO_LIQUIDACION|CARTA_GARANTIA|OPCIONES_DE_FORMALIZACION_DE_CONTRATO|MENSUALIDAD_AVISO_OPCIONES_SALIDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|PLAZO_PAGO_RENTABILIDAD|TASA_ANUAL_RENTABILIDAD_GARANTIZADA|EQUITY_INSTANTANEO";
 	}
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
