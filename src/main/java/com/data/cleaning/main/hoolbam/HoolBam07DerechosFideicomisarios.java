@@ -17,7 +17,7 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 	}
 
 	public  String getFolderPath() {
-		return "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/hool-bam-promesa-compra-venta-derecho-fideicomisarios/old/";
+		return "/Users/leonardo.larraquy/workspace-upwork/data-cleaning/hool-bam-promesa-compra-venta-derecho-fideicomisarios/old/";
 	}
 
 	public String getFieldsTitle() {
@@ -39,6 +39,9 @@ public class HoolBam07DerechosFideicomisarios extends BaseParser {
 		}
 		if(direccion.indexOf("QUINTA") > 0)
 			direccion= direccion.substring(0, direccion.indexOf("QUINTA"));
+
+		if(direccion.indexOf("/") > 0)
+			direccion = direccion.substring(0, direccion.indexOf("/"));	
 
 		return direccion;
 	}
