@@ -9,8 +9,8 @@ public class PdfToTextConverter {
 
 	public static void main(String[] args) {
 		// Ruta de la carpeta que contiene los archivos PDF
-//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/parcialidades-promesa-compra-venta/";
-//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/contado-promesa-compraventa/";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/bacalar-parcialidades-promesa-compra-venta";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/bacalar-contado-promesa-compraventa";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/smart-depas-experiencias/";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/smart-depas-promesa-compraventa-fractional/";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/smart-depas-promesa-compraventa-completo/";
@@ -37,10 +37,13 @@ public class PdfToTextConverter {
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/living-universidad-2";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/lofts-la-paz-convenio-adhesion";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/merida-montejo";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/aurum-tulum-contado";
+		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/aurum-tulum-plazos";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/casa-mangle";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/acciones-management";
 //		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/bordeaux-villas";
-		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/bacalar-fondo-tierra";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/bacalar-fondo-tierra";
+//		String folderPath = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/nuevo-proyecto";
 		
 		File folder = new File(folderPath);
 

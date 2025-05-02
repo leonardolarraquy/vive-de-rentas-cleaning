@@ -43,17 +43,22 @@ public abstract class BaseParser {
 
 	public String getDireccionAdquirente(String content) {
 		String direccionAdquirente  = Commons.extract(content, "ADQUIRENTE", "Cualquiera", "OCTAVA");
-		if(direccionAdquirente.length() > 13)
-			direccionAdquirente = direccionAdquirente.substring(13);
+		if(direccionAdquirente.length() == 0)		
+			direccionAdquirente  = Commons.extract(content, "EL “PROMITENTE ADQUIRENTE”", "/", "OCTAVA").replaceAll("EL “PROMITENTE ADQUIRENTE”:", "");
+		else {
+			if(direccionAdquirente.length() > 13)
+				direccionAdquirente = direccionAdquirente.substring(13);
 
-		if(direccionAdquirente.indexOf("EL ") > 0)
-			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("EL "));	
+			if(direccionAdquirente.indexOf("EL ") > 0)
+				direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("EL "));	
 
-		if(direccionAdquirente.indexOf("/") > 0)
-			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("/"));	
+			if(direccionAdquirente.indexOf("/") > 0)
+				direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("/"));	
 
-		if(direccionAdquirente.indexOf("DÉCIMA") > 0)
-			direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("DÉCIMA"));	
+			if(direccionAdquirente.indexOf("DÉCIMA") > 0)
+				direccionAdquirente = direccionAdquirente.substring(0, direccionAdquirente.indexOf("DÉCIMA"));				
+		}
+		
 
 		return Commons.toSingleLine(direccionAdquirente);
 	}

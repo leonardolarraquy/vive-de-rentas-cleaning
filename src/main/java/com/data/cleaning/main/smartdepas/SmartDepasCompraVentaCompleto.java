@@ -21,8 +21,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 	}
 
 	public String getFieldsTitle() {
-//		return "Objeto|Contraprestacion|Contraprestacion Num|Moneda|Clausulas|Vigencia|Entrega|Entrega Num|Prorroga|Unidad|Unidad Abreviada|Forma de Pago";
-		return "OBJETO_DEL_CONTRATO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ADQUIRIENTE|VIGENCIA_DE_CONTRATO|FECHA_ENTREGA|PRORROGA_DE_ENTREGA|UNIDAD|FORMA_DE_PAGO";
+		return "OBJETO_DEL_CONTRATO|MONTO_INVERSION|MONEDA|OBLIGACIONES_ADQUIRIENTE|VIGENCIA_DE_CONTRATO|FECHA_ENTREGA|PRORROGA_DE_ENTREGA|UNIDAD|FORMA_DE_PAGO|CARTA_RENDIMIENTO|FECHA_PAGO_RENDIMIENTOS|PORC_RENDIMIENTOS|MESES_RENDIMIENTOS";
 	}
 
 	public static void main(String[] args) {
@@ -60,13 +59,38 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 		if(unidadAbrev.length() == 0) {
 
 			unidadAbrev   = unidad.substring(unidad.indexOf(":") + 1, unidad.length());
-			
+
 			if(unidadAbrev.length() == 0) 
 				revisionManual = revisionManual + "Unidad.";
 
 		}
 
 		String formaDePago          = extractFormaDePago(content);
+
+		String cartaRendimiento      = "NO";
+		String fechaPagoRendimientos = "";
+		String porcRendimientos      = "";
+		String mesesRendimientos     = "";
+
+		if(content.indexOf("Rendimiento Garantizado") > 0) {
+			cartaRendimiento = "SI";
+
+			fechaPagoRendimientos = Commons.extract(content, "mencionada", ".", "Rendimiento Garantizado");
+			if(fechaPagoRendimientos.indexOf("partir") > 0)
+				fechaPagoRendimientos = fechaPagoRendimientos.substring(fechaPagoRendimientos.indexOf("partir") + 7, fechaPagoRendimientos.length());
+
+			if(fechaPagoRendimientos.indexOf(",") > 0)
+				fechaPagoRendimientos = fechaPagoRendimientos.substring(0, fechaPagoRendimientos.indexOf(","));
+
+			porcRendimientos      = Commons.extract(content, "correspondiente", "%", "Rendimiento Garantizado").replaceAll("correspondiente", "").replaceAll("al", "") + "%";
+
+			mesesRendimientos     = Commons.extract(content, "durante", "contados", "Rendimiento Garantizado").replaceAll("durante", "").replaceAll("un periodo de ", "");
+			if(mesesRendimientos.indexOf("el pago") > 0)
+				mesesRendimientos = mesesRendimientos.substring(0, mesesRendimientos.indexOf("el pago"));
+			
+			if(mesesRendimientos.indexOf(",") > 0)
+				mesesRendimientos = mesesRendimientos.substring(0, mesesRendimientos.indexOf(","));			
+		}
 
 		csvWriter.write("|");
 
@@ -76,21 +100,25 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 						Commons.toSingleLine(objeto),
 
-//						Commons.toSingleLine(montoInversion),
 						Commons.toSingleLine(montoInversionNum),
 						Commons.toSingleLine(moneda),
 
 						Commons.toSingleLine(obligacion),
 						Commons.toSingleLine(vigencia),
 
-//						Commons.toSingleLine(entrega),
 						Commons.toSingleLine(entregaNum),
 						Commons.toSingleLine(prorroga),
 
-//						Commons.toSingleLine(unidad),
 						Commons.toSingleLine(unidadAbrev),
 
-						Commons.toSingleLine(formaDePago)));
+						Commons.toSingleLine(formaDePago),
+
+						Commons.toSingleLine(cartaRendimiento),
+						Commons.toSingleLine(fechaPagoRendimientos),
+						Commons.toSingleLine(porcRendimientos),
+						Commons.toSingleLine(mesesRendimientos)
+
+						));
 
 	}
 
@@ -228,11 +256,11 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 
 		return "";
 	}
-	
+
 	public static String extractObligacion(String content) {
 		try {
 			boolean goToEndLine = true;
-			
+
 			int a      = content.indexOf("manera:", content.indexOf("SEGUNDA"));
 			if(a == -1) {
 				a      = content.indexOf("corresponda.", content.indexOf("SEGUNDA"));
@@ -248,7 +276,7 @@ public class SmartDepasCompraVentaCompleto extends BaseParser{
 			}
 
 			int index  = a;
-			
+
 			if(goToEndLine)
 				index = content.indexOf("\n", a);
 

@@ -21,8 +21,8 @@ public class MeridaMontejo extends BaseParser {
 	}
 
 	public String getFieldsTitle() {
-//		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Terminacion|Vigencia|Unidad Inmobiliaria";
-		return "UBICACION_PROPIEDAD|FECHA_DE_ENTREGA|MONTO_INVERSION|MONEDA|OBLIGACIONES_ENAJENANTE|DEVOLUCION_POR_TERMINACION_DE_CONTRATO|VIGENCIA_DE_CONTRATO|UNIDAD";
+		//		return "Ubicacion|Fecha Entrega|Contraprestacion|Contraprestacion Num|Moneda|Constitucion|Terminacion|Vigencia|Unidad Inmobiliaria";
+		return "N._DE_TICKETS|FASE_PROYECTO|PRECIO_TICKET|APARTADO|APARTADOESCRITO|LIQUIDACION|MONEDA|CANTIDAD_DE_MESES_SOBRE_LA_QUE_PUEDE_EJERCER_RECONOCIMIENTO_DE_INVERSION|FECHA_DE_ENTREGA|CARTA_RENTAS_ADELANTADAS|CANTIDAD_DE_MESES_DE_RENTAS_ADELANTADAS|MES_INICIO_RENTAS_ADELANTADAS|MES_PRIMER_PAGO_RENTAS_ADELANTADAS|PORCENTAJE_RENDIMIENTOS";
 	}
 
 	public static void main(String[] args) {
@@ -31,49 +31,81 @@ public class MeridaMontejo extends BaseParser {
 	}
 
 	public void addOtherFields(BufferedWriter csvWriter, String content, String revisionManual) throws IOException {
-		String ubicacion            = Commons.extract(content, "ubicado", "(", "TERCERO").replaceAll("ubicado en", "");
-		if(ubicacion.length() == 0)
-			revisionManual = revisionManual + "Ubicacion.";
-		
-		String entrega              = Commons.extract(content, "mes", ".", "ENTREGA DEL");
-		
-		String montoInversion       = Commons.extract(content, "cantidad de", "(", "SEGUNDA");
+		String nroTicket            = Commons.extract(content, "equivalente a", ")", "OBJETO");
+		nroTicket = Commons.numericValue(nroTicket);
+		if(nroTicket.length() == 0)
+			revisionManual = revisionManual + "Nro Ticket.";
+
+		String fase                 = Commons.extract(content, "(", ")", "Serie").replace("(", "");
+		if(fase.length() == 0)
+			revisionManual = revisionManual + "Fase.";
+
+		String montoInversion       = Commons.extract(content, "total de", "(", "SEGUNDA").replaceAll("total de", "");
 		if(montoInversion.length() == 0)
 			revisionManual = revisionManual + "Contraprestacion.";
 
-		String montoInversionNum    = Commons.numericValue(montoInversion);
+		String apartado             = Commons.extract(content, "cantidad de", "(", "entregó").replaceAll("cantidad de", "");
+		String apartadoEscrito      = Commons.extract(content, "(", ")", "entregó").replace("(", "");
+		String liquidacion          = Commons.extract(content, "cantidad de", "(", "entregará").replaceAll("cantidad de", "");
 		String moneda               = Commons.extractMoneda(montoInversion);
 
-		String constitucion         = Commons.extract(content, "La", ",", "CUARTA");
-		String terminacion          = "no se emitan \"Los Derechos\", devolverá el valor de la Contraprestación a más tardar dentro de los 90 (noventa) días naturales";
+		String cantidadMeses        = Commons.extract(content, "transcurridos", "meses", "SEXTA").replaceAll("transcurridos", "");
 
-		String vigencia             = Commons.extract(content, "hasta", ",", "SEXTA");
-		
-		String unidad               = extractUnidad(content);
-						
+		String entrega              = Commons.extract(content, "mes", ".", "NOVENA");
+
+		String rentasAdelantadas    = content.indexOf("Rentas Adelantadas") > 0 ? "SI" : "NO";
+
+		String mesesAdelantadas     = "";
+		String mesRentas            = "";
+		String mesPrimerPago        = "";
+		String porcRendimiento      = "";
+
+		if("SI".equals(rentasAdelantadas)) {
+			mesesAdelantadas        = Commons.extract(content, "durante", "(", "Rentas Adelantadas").replaceAll("durante ", "");
+			mesRentas               = Commons.extract(content, "partir del", ",", "Rentas Adelantadas").replaceAll("partir del ", "");
+			mesPrimerPago           = Commons.extract(content, "partir del", ".", "previamente mencionada").replaceAll("partir del ", "");
+			porcRendimiento         = Commons.extract(content, "correspondiente al", "%", "Rentas Adelantadas").replaceAll("correspondiente al", "");
+		}
+
 		csvWriter.write("|");
 
 		csvWriter.write(
 				String.join("|",
 						revisionManual, 
 
-						Commons.toSingleLine(ubicacion),
+						Commons.toSingleLine(nroTicket),
+						Commons.toSingleLine(fase),
+
+
+						Commons.toSingleLine(montoInversion),
+						Commons.toSingleLine(apartado),
+						Commons.toSingleLine(apartadoEscrito),
+						Commons.toSingleLine(liquidacion),
+						Commons.toSingleLine(moneda),
+
+						Commons.toSingleLine(cantidadMeses),
 
 						Commons.toSingleLine(Commons.extraerFechaAPartirDeTexto(entrega)),
 
-//						Commons.toSingleLine(montoInversion),
-						Commons.toSingleLine(montoInversionNum),
-						Commons.toSingleLine(moneda),
+						Commons.toSingleLine(rentasAdelantadas),
+						Commons.toSingleLine(Commons.numericValue(mesesAdelantadas)),
+						Commons.toSingleLine(mesRentas),
+						Commons.toSingleLine(mesPrimerPago),
+						Commons.toSingleLine(porcRendimiento)
 
-        				Commons.toSingleLine(constitucion),
-        				Commons.toSingleLine(terminacion),
-
-        				Commons.toSingleLine(vigencia),
-
-        				Commons.toSingleLine(unidad)
-				));
+						));
 	}
-	
+
+	public String getBeneficiario(String content) {
+		String beneficiario = super.getBeneficiario(content);
+
+		int index = beneficiario.indexOf("C. ");
+		if(index > 0)
+			beneficiario = beneficiario.substring( index + 3);
+
+		return beneficiario;
+	}
+
 	public static String extractUnidad(String texto) {
 		try {
 
