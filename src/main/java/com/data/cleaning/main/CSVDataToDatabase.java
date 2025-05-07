@@ -9,7 +9,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.commons.csv.CSVFormat;
@@ -20,11 +22,12 @@ public class CSVDataToDatabase {
     private static final String DB_URL = "jdbc:mysql://localhost:3306/betting";
     private static final String DB_USER = "root";
     private static final String DB_PASSWORD = "[SL1cJS=$4atpx/]9i6p";
-    private static final String CSV_FOLDER = "/Users/leonardo.larraquy/eclipse-workspace/data-cleaning/outputs/";
+    private static final String CSV_FOLDER = "/Users/leonardo.larraquy/workspace-upwork/data-cleaning/outputs/";
 
     public static void main(String[] args) {
         File folder = new File(CSV_FOLDER);
         File[] csvFiles = folder.listFiles((dir, name) -> name.toLowerCase().endsWith(".csv"));
+        Arrays.sort(csvFiles, Comparator.comparing(File::getName));
 
         if (csvFiles != null) {
             try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
@@ -42,7 +45,7 @@ public class CSVDataToDatabase {
              CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT.withFirstRecordAsHeader())) {
             
             List<String> columnNames = new ArrayList<>(csvParser.getHeaderMap().keySet());
-            String insertSQL = generateInsertSQL("listado", columnNames);
+            String insertSQL = generateInsertSQL("listado2", columnNames);
             
             try (PreparedStatement pstmt = conn.prepareStatement(insertSQL)) {
                 for (CSVRecord record : csvParser) {
